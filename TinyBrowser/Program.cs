@@ -12,15 +12,15 @@ namespace TinyBrowser {
             const int port = 80;
             var version = "1.1";
             var exit = false;
-            var localLink = string.Empty;
+            var hostname = "acme.com";
+            var link = $"/";
             var history = new List<string>();
             var historyPointer = 0;
             var newPage = true;
             var printResult = true;
             while(!exit) {
-                var hostname = "acme.com";
                 if(newPage) {
-                    history.Add(localLink);
+                    history.Add(link);
                     historyPointer = history.Count-1;
                 }
                 var targetLink = history[historyPointer];
@@ -48,18 +48,22 @@ namespace TinyBrowser {
                 if(printResult)Console.WriteLine($"Webpage Title: {title}");
                 if(printResult)Console.WriteLine("Links");
                 var links = ExtractHyperLinks(data);
-                for(int i = 0; i < links.Count; i++) 
-                    if(printResult)Console.WriteLine($"{(i + ":").PadRight(3)} {links[i][0].TrimStart().TrimEnd()} ({links[i][1]})");
+                for(int i = 0; i < links.Count; i++) {
+                    if(printResult)
+                        Console.WriteLine(
+                            $"{(i + ":").PadRight(3)} {links[i][0].TrimStart().TrimEnd()} ({links[i][1]})");
+                    links[i][1] = IsLocalLink(links[i][1], hostname);
+                }                
                 Console.WriteLine("Type in 'q' to exit!");
                 var s = Console.ReadLine();
                 int linksIndex;
                 bool isNumber = int.TryParse(s, out linksIndex);
-                if(linksIndex > links.Count - 1) s = "r";
+                if(isNumber && linksIndex > links.Count - 1) s = "r";
                 newPage = isNumber;
                 printResult = !Equals(s, "h");
                 switch(s) {
                     default:
-                        if(isNumber) localLink = links[linksIndex][1];
+                        if(isNumber) link = links[linksIndex][1];
                         break;
                     case "h":
                         for(var i = 0; i < history.Count; i++) {
@@ -107,7 +111,7 @@ namespace TinyBrowser {
         }
 
         private static string RequestLine(string v, string host, string localLink) {
-            var requestMeg = $"GET /{localLink}";
+            var requestMeg = $"GET {localLink}";
             switch(v) {
                 case "0.9":
                     requestMeg += "\r\n";
@@ -125,14 +129,21 @@ namespace TinyBrowser {
         }
 
         private static bool IsExternalLink(string targetLink, out string host, out string localLink) {
-            if(targetLink.StartsWith("//") | targetLink.StartsWith("http")) {
-                host = Regex.Match(targetLink, ".*?//(?<Host>.*?)/",RegexOptions.IgnoreCase).Groups["Host"].Value;
-                localLink = Regex.Match(targetLink, ".*?//.*?/(?<link>.*?)",RegexOptions.IgnoreCase).Groups["link"].Value;
+            host = string.Empty;
+            localLink = targetLink;
+            if(targetLink.Contains("//")) {
+                host = Regex.Match(targetLink, "//(www.|WWW.)?(?<host>.*?)/",RegexOptions.IgnoreCase).Groups["host"].Value;
+                if(targetLink.StartsWith("//")) 
+                    localLink = localLink.Remove(0, 2);
                 return true;
             }
-            host = string.Empty;
-            localLink = string.Empty;
             return false;
+        }
+
+        private static string IsLocalLink(string targetLink, string hostName) {
+            var tar = targetLink.StartsWith("/") ? targetLink : "/" + targetLink;
+            if(!(targetLink.StartsWith("//") | targetLink.StartsWith("http"))) return $"http://{hostName}{tar}";
+            return targetLink;
         }
     }
 
