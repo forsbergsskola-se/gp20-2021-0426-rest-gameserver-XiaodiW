@@ -40,6 +40,7 @@ namespace TinyBrowser {
                 var data = reader.ReadToEnd();
                 // Console.WriteLine(data);
                 client.Close();
+                
                 var title = ExtractHeadInfo(data, "Title");
                 if(printResult)Console.WriteLine($"Webpage Title: {title}");
                 if(printResult)Console.WriteLine("Links");
@@ -50,6 +51,7 @@ namespace TinyBrowser {
                 var s = Console.ReadLine();
                 int linksIndex;
                 bool isNumber = int.TryParse(s, out linksIndex);
+                if(linksIndex > links.Count - 1) s = "r";
                 newPage = isNumber;
                 printResult = !Equals(s, "h");
                 switch(s) {
@@ -119,6 +121,7 @@ namespace TinyBrowser {
             return requestMeg;
         }
         private static string RequestLine(string v, string localLink) {
+            if(localLink.StartsWith("//")) localLink = localLink.Replace("//", string.Empty);
             var requestMeg = $"GET {localLink}";
             switch(v) {
                 case "0.9":
@@ -129,6 +132,7 @@ namespace TinyBrowser {
                                   "\r\n\r\n";
                     break;
             }
+            Console.WriteLine(requestMeg);
             return requestMeg;
         }
     }
