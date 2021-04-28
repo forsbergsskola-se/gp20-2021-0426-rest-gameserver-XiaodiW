@@ -8,10 +8,9 @@ using System.Text.RegularExpressions;
 namespace TinyBrowser {
 
     internal static class Program {
-        const string Hostname = "acme.com";
-        const int Port = 80;
-        static string version = "1.1";
         private static void Main(string[] args) {
+            const int port = 80;
+            var version = "1.1";
             var exit = false;
             var localLink = string.Empty;
             var history = new List<string>();
@@ -19,20 +18,24 @@ namespace TinyBrowser {
             var newPage = true;
             var printResult = true;
             while(!exit) {
+                var hostname = "acme.com";
                 if(newPage) {
                     history.Add(localLink);
                     historyPointer = history.Count-1;
                 }
                 var targetLink = history[historyPointer];
                 using var client = new TcpClient();
-                client.Connect(Hostname, Port);
+                var external = IsExternalLink(targetLink, out var newHost, out var newLink);
+                if(external) {
+                    hostname = newHost;
+                    targetLink = newLink;
+                }
+                
+                client.Connect(hostname, port);
                 using var networkStream = client.GetStream();
                 networkStream.ReadTimeout = 2000;
                 using var writer = new StreamWriter(networkStream);
-                string requestMeg;
-                if(targetLink.StartsWith("//") | targetLink.StartsWith("http"))
-                    requestMeg = RequestLine(version, targetLink);
-                else requestMeg = RequestLine(version, Hostname, targetLink);
+                var requestMeg = RequestLine(version, hostname, targetLink);
 
                 var bytes = Encoding.UTF8.GetBytes(requestMeg);
                 networkStream.Write(bytes, 0, bytes.Length);
@@ -120,20 +123,16 @@ namespace TinyBrowser {
             }
             return requestMeg;
         }
-        private static string RequestLine(string v, string localLink) {
-            if(localLink.StartsWith("//")) localLink = localLink.Replace("//", string.Empty);
-            var requestMeg = $"GET {localLink}";
-            switch(v) {
-                case "0.9":
-                    requestMeg += "\r\n";
-                    break;
-                case "1.1":
-                    requestMeg += $" HTTP/{v}" + 
-                                  "\r\n\r\n";
-                    break;
+
+        private static bool IsExternalLink(string targetLink, out string host, out string localLink) {
+            if(targetLink.StartsWith("//") | targetLink.StartsWith("http")) {
+                host = Regex.Match(targetLink, ".*?//(?<Host>.*?)/",RegexOptions.IgnoreCase).Groups["Host"].Value;
+                localLink = Regex.Match(targetLink, ".*?//.*?/(?<link>.*?)",RegexOptions.IgnoreCase).Groups["link"].Value;
+                return true;
             }
-            Console.WriteLine(requestMeg);
-            return requestMeg;
+            host = string.Empty;
+            localLink = string.Empty;
+            return false;
         }
     }
 
