@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -13,7 +14,7 @@ namespace TinyBrowser {
             var version = "1.1";
             var exit = false;
             var hostname = "acme.com";
-            var link = $"/";
+            var link = $"http://{hostname}/";
             var history = new List<string>();
             var historyPointer = 0;
             var newPage = true;
@@ -30,7 +31,8 @@ namespace TinyBrowser {
                     hostname = newHost;
                     targetLink = newLink;
                 }
-                
+
+                client.ReceiveTimeout = 2000;
                 client.Connect(hostname, port);
                 using var networkStream = client.GetStream();
                 networkStream.ReadTimeout = 2000;
