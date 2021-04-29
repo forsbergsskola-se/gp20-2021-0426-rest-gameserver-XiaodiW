@@ -34,7 +34,7 @@ namespace GitHubExplorer {
         public string updated_at{ get; set; }
 
         public override string ToString() {
-            return $"User Name: {name}\n\rUser id: {id}\n\r" +
+            return $"User's Profile:\n\rUser Name: {name}\n\rUser id: {id}\n\r" +
                    $"User company: {company}\n\rUser organization url: {organizations_url}\n\r" + 
                    $"User repos url:{repos_url}\n\rUpdate at:{updated_at}";
         }
