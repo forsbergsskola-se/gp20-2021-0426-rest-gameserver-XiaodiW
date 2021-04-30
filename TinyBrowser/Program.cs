@@ -56,7 +56,7 @@ namespace TinyBrowser {
                 for(int i = 0; i < urls.Count; i++) {
                     if(isPrintResults)
                         Console.WriteLine(
-                            $"{(i + ":").PadRight(3)} {urls[i][0].TrimStart().TrimEnd()} ({urls[i][1]})");
+                            $"{(i + ":").PadRight(3)} {PrettifyPrint(urls[i][0].TrimStart().TrimEnd())} ({urls[i][1]})");
                     urls[i][1] = NormalizeUrl(urls[i][1], hostname);
                 }                
                 Console.WriteLine("What would you want to continue? line number? b? f? h? q?");
@@ -162,6 +162,13 @@ namespace TinyBrowser {
             if(!(targetLink.StartsWith("//") | targetLink.StartsWith("http"))) 
                 return $"http://{hostName}{tar}";
             return targetLink;
+        }
+
+        private static string PrettifyPrint(string s) {
+            if(s.Length > 15)
+                s = string.Concat(s.Substring(0, 6), "...", s.Substring(s.Length - 7, 6));
+            else s = s.PadRight(15);
+            return s;
         }
     }
 
