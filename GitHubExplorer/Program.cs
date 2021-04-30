@@ -14,6 +14,7 @@ namespace GitHubExplorer {
 
         private static async Task Main(string[] args) {
             UserName = MicroSoftSecretsManager.LoadSecret("github-user");
+            UserName = "marczaku";
             Token = MicroSoftSecretsManager.LoadSecret("github-token");
             Console.WriteLine($"User: {UserName}; Token: {Token}");
 
@@ -25,13 +26,20 @@ namespace GitHubExplorer {
                 
                 switch(chooseIndex) {
                     case 0:
-                        var userInfo = JsonSerializer.Deserialize<UserResponse>(data);
+                        var userInfo = JsonSerializer.Deserialize<UserData>(data);
                         Console.WriteLine(userInfo);
                         break;
                     case 1:
                         var reposInfo = JsonSerializer.Deserialize<ReposData[]>(data);
+                        Console.WriteLine($"{UserName}'s Repositories");
                         for(var i = 0; i < reposInfo.Length; i++)
-                            Console.WriteLine($"{i.ToString().PadRight(3)}  {reposInfo[i]}");
+                            Console.WriteLine($"{i}: {reposInfo[i]}");
+                        break;
+                    case 2:
+                        var orgsInfo = JsonSerializer.Deserialize<OrgsData[]>(data);
+                        Console.WriteLine($"{UserName}'s Organizations");
+                        for(var i = 0; i < orgsInfo.Length; i++)
+                            Console.WriteLine($"{i}: {orgsInfo[i]}");
                         break;
                 }
 
