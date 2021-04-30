@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection.Emit;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
 namespace GitHubExplorer {
 
@@ -15,8 +13,8 @@ namespace GitHubExplorer {
         private static string Token;
 
         private static async Task Main(string[] args) {
-            UserName = LoadSecret("github-user");
-            Token = LoadSecret("github-token");
+            UserName = MicroSoftSecretsManager.LoadSecret("github-user");
+            Token = MicroSoftSecretsManager.LoadSecret("github-token");
             Console.WriteLine($"User: {UserName}; Token: {Token}");
 
             var exit = false;
@@ -92,31 +90,6 @@ namespace GitHubExplorer {
             client.Dispose();
             return data;
         }
-
-        #region Microsoft Secret Manger
-
-        /// <summary>
-        ///     Returns the saved secrets in Microsoft Secrets Manager.
-        /// </summary>
-        /// <param name="i">0:github-user; 1:github-token</param>
-        /// <returns></returns>
-        private static string LoadSecret(string key) {
-            //preparation:
-            //1. dotnet add package Microsoft.Extensions.Configuration.UserSecrets
-            //   or add the package via NuGet.
-            //2. dotnet user-secret init
-            //3. dotnet use-secrets set "github-token" "MytokenSecrets"
-            //  dotnet user-secrets list
-            // dotnet user-secrets clear.
-            // ~/.microsoft/usersecrets/<user_secrets_id>/secrets.json
-            // %APPDATA%\Microsoft\UserSecrets\<user_secrets_id>\secrets.json
-            var config = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
-            var secretProvider = config.Providers.First();
-            secretProvider.TryGet(key, out var token);
-            return token;
-        }
-
-        #endregion
     }
 
 }
