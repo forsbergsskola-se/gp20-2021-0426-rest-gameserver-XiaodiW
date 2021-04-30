@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,9 +13,7 @@ namespace GitHubExplorer {
         private static string Token;
 
         private static async Task Main(string[] args) {
-            // UserName = MicroSoftSecretsManager.LoadSecret("github-user");
             Token = MicroSoftSecretsManager.LoadSecret("github-token");
-            
             var exit = false;
             var chooseIndex = 0;
             var URL = new Uri($"https://api.github.com/user");
@@ -38,42 +37,71 @@ namespace GitHubExplorer {
                         Console.WriteLine($"{UserName}'s Organizations");
                         for(var i = 0; i < orgsInfo.Length; i++)
                             Console.WriteLine($"{i}: {orgsInfo[i]}");
+                        OrgsMenu(orgsInfo,ref URL, ref chooseIndex, ref exit);
+                        goto NextLoop;
+                    case 3:
+                        var memberInfo = JsonSerializer.Deserialize<UserData[]>(data);
+                        for(var i = 0; i < memberInfo.Length; i++) {
+                            Console.WriteLine($"{String.Concat(i, ':').PadRight(3)}{memberInfo[i].login.PadRight(20)}({memberInfo[i].url})");
+                        }
                         break;
                 }
+                MainMenu(ref URL, ref chooseIndex, ref exit);
+                NextLoop: 
+                ;
+            }
+        }
 
-                Console.WriteLine(
-                    "\n\rWhat would you like to see next?\n\r" +
-                    "0: User's Profile\n\r" + 
-                    "1: Repositories\n\r" + 
-                    "2: Organizations\n\r" + 
-                    "b: Back to MainPage\n\r" + 
-                    "q: Exit");
-                var r = Console.ReadLine();
-                switch(r) {
-                    case "0":
-                        URL = new Uri($"https://api.github.com/user");
-                        chooseIndex = 0;
-                        break;
-                    case "1":
-                        URL = new Uri($"https://api.github.com/user/repos");
-                        chooseIndex = 1;
-                        break;
-                    case "2":
-                        URL = new Uri($"https://api.github.com/user/orgs");
-                        chooseIndex = 2;
-                        break;
-                    case "b":
-                        URL = new Uri($"https://api.github.com/user");
-                        chooseIndex = 0;
-                        break;
-                    case "q":
-                        exit = true;
-                        break;
-                    default: 
-                        URL = new Uri($"https://api.github.com/users/{UserName}");
-                        chooseIndex = 0;
-                        break;
-                }
+        private static void MainMenu(ref Uri URL, ref int chooseIndex, ref bool exit) {
+            Console.WriteLine("\n\rWhat would you like to see next?\n\r" + "0: User's Profile\n\r" + "1: Repositories\n\r" +
+                              "2: Organizations\n\r" + "b: Back to MainPage\n\r" + "q: Exit\n\r");
+            var r = Console.ReadLine();
+            switch(r) {
+                case "0":
+                    URL = new Uri($"https://api.github.com/user");
+                    chooseIndex = 0;
+                    break;
+                case "1":
+                    URL = new Uri($"https://api.github.com/user/repos");
+                    chooseIndex = 1;
+                    break;
+                case "2":
+                    URL = new Uri($"https://api.github.com/user/orgs");
+                    chooseIndex = 2;
+                    break;
+                case "b":
+                    URL = new Uri($"https://api.github.com/user");
+                    chooseIndex = 0;
+                    break;
+                case "q":
+                    exit = true;
+                    break;
+            }
+        }
+
+        private static void OrgsMenu(OrgsData[] data, ref Uri URL, ref int chooseIndex, ref bool exit) {
+            Console.WriteLine("\n\rWhat would you like to see next?\n\r" +
+                              "line number(Goto see the repo's members) \n\r" + "b: Back to MainPage\n\r" + "q: Exit\n\r");
+            var s = Console.ReadLine();
+            var isNumber = int.TryParse(s, out var linksIndex);
+            //Refresh the page if user typed number is out of boundary. 
+            if(isNumber && linksIndex > data.Length - 1) s = "r";
+            switch(s) {
+                default:
+                    if(isNumber) URL = new Uri($"https://api.github.com/orgs/{data[linksIndex].login}/members?page=1&per_page=1000");
+                    chooseIndex = 3;
+                    break;
+                case "b":
+                    URL = new Uri("https://api.github.com/user");
+                    chooseIndex = 0;
+                    break;
+                case "r":
+                    URL = new Uri($"https://api.github.com/user/orgs");
+                    chooseIndex = 2;
+                    break;
+                case "q":
+                    exit = true;
+                    break;
             }
         }
 
@@ -86,7 +114,7 @@ namespace GitHubExplorer {
             // Console.WriteLine(requestMeg.ToString());
             var received = client.SendAsync(requestMeg);
             // Console.WriteLine(await received);
-            Console.WriteLine($"Server response status: {received.Result.StatusCode.ToString()}");
+            // Console.WriteLine($"Server response status: {received.Result.StatusCode.ToString()}");
             var stream = await received.Result.Content.ReadAsStreamAsync();
             var reader = new StreamReader(stream);
             var data = await reader.ReadToEndAsync();
