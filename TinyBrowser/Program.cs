@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -14,30 +13,33 @@ namespace TinyBrowser {
             var version = "1.1";
             var exit = false;
             var hostname = "acme.com";
-            var link = $"http://{hostname}/";
+            var url = $"http://{hostname}/";
             var history = new List<string>();
             var historyPointer = 0;
             var newPage = true;
-            var printResult = true;
+            var isPrintResults = true;
+            
             while(!exit) {
                 if(newPage) {
-                    history.Add(link);
+                    history.Add(url);
                     historyPointer = history.Count-1;
                 }
-                var targetLink = history[historyPointer];
-                using var client = new TcpClient();
-                var external = IsExternalLink(targetLink, out var newHost, out var newLink);
-                if(external) {
-                    hostname = newHost;
-                    targetLink = newLink;
-                }
+                var targetUrl = history[historyPointer];
 
+                var isExternalUrl = IsExternalLink(targetUrl, out var newHost, out var newUrl);
+                if(isExternalUrl) {
+                    hostname = newHost;
+                    targetUrl = newUrl;
+                }
+                
+                using var client = new TcpClient();
                 client.ReceiveTimeout = 2000;
                 client.Connect(hostname, port);
                 using var networkStream = client.GetStream();
                 networkStream.ReadTimeout = 2000;
                 using var writer = new StreamWriter(networkStream);
-                var requestMeg = RequestLine(version, hostname, targetLink);
+                
+                var requestMeg = RequestLine(version, hostname, targetUrl);
 
                 var bytes = Encoding.UTF8.GetBytes(requestMeg);
                 networkStream.Write(bytes, 0, bytes.Length);
@@ -46,27 +48,32 @@ namespace TinyBrowser {
                 // Console.WriteLine(data);
                 client.Close();
                 
-                var title = ExtractHeadInfo(data, "Title");
-                if(printResult)Console.WriteLine($"Webpage Title: {title}");
-                if(printResult)Console.WriteLine("Links");
-                var links = ExtractHyperLinks(data);
-                for(int i = 0; i < links.Count; i++) {
-                    if(printResult)
+                var title = ExtractHeading(data, "Title");
+                if(isPrintResults)Console.WriteLine($"Webpage Title: {title}");
+                if(isPrintResults)Console.WriteLine("Links");
+                var urls = ExtractHyperLinks(data);
+                
+                for(int i = 0; i < urls.Count; i++) {
+                    if(isPrintResults)
                         Console.WriteLine(
-                            $"{(i + ":").PadRight(3)} {links[i][0].TrimStart().TrimEnd()} ({links[i][1]})");
-                    links[i][1] = IsLocalLink(links[i][1], hostname);
+                            $"{(i + ":").PadRight(3)} {urls[i][0].TrimStart().TrimEnd()} ({urls[i][1]})");
+                    urls[i][1] = NormalizeUrl(urls[i][1], hostname);
                 }                
-                Console.WriteLine("Type in 'q' to exit!");
+                Console.WriteLine("What would you want to continue? line number? b? f? h? q?");
                 var s = Console.ReadLine();
-                int linksIndex;
-                bool isNumber = int.TryParse(s, out linksIndex);
-                if(isNumber && linksIndex > links.Count - 1) s = "r";
+                //Check if the user type in a number.
+                bool isNumber = int.TryParse(s, out var linksIndex);
+                //Refresh the page if user typed number is out of boundary. 
+                if(isNumber && linksIndex > urls.Count - 1) s = "r";
+                
                 newPage = isNumber;
-                printResult = !Equals(s, "h");
+                //if user chosen option is not "History", need to print all Results
+                isPrintResults = !Equals(s, "h");
                 switch(s) {
                     default:
-                        if(isNumber) link = links[linksIndex][1];
+                        if(isNumber) url = urls[linksIndex][1];
                         break;
+
                     case "h":
                         for(var i = 0; i < history.Count; i++) {
                             var pointer = historyPointer == i ? "==>" : "   ";
@@ -79,9 +86,11 @@ namespace TinyBrowser {
                     case "f":
                         if(history.Count - 1 > historyPointer) historyPointer++;
                         break;
-                    case "r": break;
+                    case "r": 
+                        break;
+                    case "q": exit = true;
+                        break;
                 }
-                exit = Equals(s, "q") | Equals(s, "Q");
             }
         }
 
@@ -108,18 +117,18 @@ namespace TinyBrowser {
             return list;
         }
 
-        private static string ExtractHeadInfo(string data, string info) {
+        private static string ExtractHeading(string data, string info) {
             return Regex.Match(data, $"<{info}>(?<Info>.*?)</{info}>", RegexOptions.IgnoreCase).Groups["Info"].Value;
         }
 
-        private static string RequestLine(string v, string host, string localLink) {
-            var requestMeg = $"GET {localLink}";
-            switch(v) {
+        private static string RequestLine(string version, string host, string url) {
+            var requestMeg = $"GET {url}";
+            switch(version) {
                 case "0.9":
                     requestMeg += "\r\n";
                     break;
                 case "1.1":
-                    requestMeg += $" HTTP/{v}" + 
+                    requestMeg += $" HTTP/{version}" + 
                                   "\r\nAccept: text/html, charset=utf-8" + 
                                   "\r\nAccept-Language: en-US" +
                                   "\r\nUser-Agent: C# program" + 
@@ -142,9 +151,16 @@ namespace TinyBrowser {
             return false;
         }
 
-        private static string IsLocalLink(string targetLink, string hostName) {
+        /// <summary>
+        /// Convert all the returned urls into form like http://Hostname/subUrl or //www.hostname/subUrl.
+        /// </summary>
+        /// <param name="targetLink"></param>
+        /// <param name="hostName"></param>
+        /// <returns></returns>
+        private static string NormalizeUrl(string targetLink, string hostName) {
             var tar = targetLink.StartsWith("/") ? targetLink : "/" + targetLink;
-            if(!(targetLink.StartsWith("//") | targetLink.StartsWith("http"))) return $"http://{hostName}{tar}";
+            if(!(targetLink.StartsWith("//") | targetLink.StartsWith("http"))) 
+                return $"http://{hostName}{tar}";
             return targetLink;
         }
     }
