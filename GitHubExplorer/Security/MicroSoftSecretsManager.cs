@@ -1,7 +1,7 @@
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
-namespace GitHubExplorer {
+namespace GitHubExplorer.Security {
 
     public static class MicroSoftSecretsManager {
         /// <summary>

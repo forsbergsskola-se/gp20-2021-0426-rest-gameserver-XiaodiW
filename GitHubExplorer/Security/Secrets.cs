@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 
-namespace GitHubExplorer {
+namespace GitHubExplorer.Security {
 
     public class Secrets {
         public string Token { get; set; }

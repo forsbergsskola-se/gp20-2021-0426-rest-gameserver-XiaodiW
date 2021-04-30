@@ -1,4 +1,4 @@
-namespace GitHubExplorer {
+namespace GitHubExplorer.Data {
 
     public class IssueData {
         public string url { get; set; }

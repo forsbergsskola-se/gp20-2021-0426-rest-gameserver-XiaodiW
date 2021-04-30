@@ -1,4 +1,4 @@
-namespace GitHubExplorer {
+namespace GitHubExplorer.Data {
 
     public class UserData: IResponseDate {
         public string login { get; set; }

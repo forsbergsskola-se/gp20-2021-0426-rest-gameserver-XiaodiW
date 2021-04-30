@@ -1,6 +1,4 @@
-using System;
-
-namespace GitHubExplorer {
+namespace GitHubExplorer.Data {
 
     public class ReposData :IResponseDate{
         public int id { get; set; }
