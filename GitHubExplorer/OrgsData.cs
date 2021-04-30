@@ -1,6 +1,6 @@
 namespace GitHubExplorer {
 
-    public class OrgsData {
+    public class OrgsData: IResponseDate {
         public string login { get; set; }
         public int id { get; set; }
         public string node_id{ get; set; }
@@ -19,6 +19,14 @@ namespace GitHubExplorer {
             return $"{login.PadRight(18)}" +
                    $"({url})" + 
                    $"{description.Substring(0,80)}";
+        }
+
+        public string GetName() {
+            return login;
+        }
+
+        public string GetUrl() {
+            return url;
         }
     }
 

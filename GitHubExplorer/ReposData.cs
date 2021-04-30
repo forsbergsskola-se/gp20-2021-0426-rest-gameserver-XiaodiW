@@ -2,7 +2,7 @@ using System;
 
 namespace GitHubExplorer {
 
-    public class ReposData {
+    public class ReposData :IResponseDate{
         public int id { get; set; }
         public string node_id { get; set; }
         public string name { get; set; }
@@ -81,6 +81,14 @@ namespace GitHubExplorer {
                 _name = string.Concat(name.Substring(0, 15), "...", name.Substring(name.Length - 8, 7));
             else _name = name.PadRight(25);
             return $"{_name} {url}";
+        }
+
+        public string GetName() {
+            return name;
+        }
+
+        public string GetUrl() {
+            return url;
         }
     }
 

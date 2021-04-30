@@ -1,6 +1,6 @@
 namespace GitHubExplorer {
 
-    public class UserData {
+    public class UserData: IResponseDate {
         public string login { get; set; }
         public int id { get; set; }
         public string node_id{ get; set; }
@@ -37,6 +37,14 @@ namespace GitHubExplorer {
             return $"User's Profile:\n\rUser Name: {name}\n\rUser id: {id}\n\r" +
                    $"User company: {company}\n\rUser organization url: {organizations_url}\n\r" + 
                    $"User repos url:{repos_url}\n\rUpdate at:{updated_at}";
+        }
+
+        public string GetName() {
+            return login;
+        }
+
+        public string GetUrl() {
+            return url;
         }
     }
 
