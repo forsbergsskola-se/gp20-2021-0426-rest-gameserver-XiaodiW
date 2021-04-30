@@ -44,6 +44,13 @@ namespace GitHubExplorer {
                         for(var i = 0; i < memberInfo.Length; i++) {
                             Console.WriteLine($"{String.Concat(i, ':').PadRight(3)}{memberInfo[i].login.PadRight(20)}({memberInfo[i].url})");
                         }
+                        OrgsMemberMenu(memberInfo,ref URL, ref chooseIndex, ref exit);
+                        goto NextLoop;
+                    case 4:
+                        var memberRepo = JsonSerializer.Deserialize<ReposData[]>(data);
+                        Console.WriteLine($"{UserName}'s Repositories");
+                        for(var i = 0; i < memberRepo.Length; i++)
+                            Console.WriteLine($"{i}: {memberRepo[i]}");
                         break;
                 }
                 MainMenu(ref URL, ref chooseIndex, ref exit);
@@ -53,8 +60,8 @@ namespace GitHubExplorer {
         }
 
         private static void MainMenu(ref Uri URL, ref int chooseIndex, ref bool exit) {
-            Console.WriteLine("\n\rWhat would you like to see next?\n\r" + "0: User's Profile\n\r" + "1: Repositories\n\r" +
-                              "2: Organizations\n\r" + "b: Back to MainPage\n\r" + "q: Exit\n\r");
+            Console.WriteLine("\n\rWhat would you like to see next?\n\r" + "0: My Profile\n\r" + "1: My Repositories\n\r" +
+                              "2: My Organizations\n\r" + "q: Exit\n\r");
             var r = Console.ReadLine();
             switch(r) {
                 case "0":
@@ -69,10 +76,6 @@ namespace GitHubExplorer {
                     URL = new Uri($"https://api.github.com/user/orgs");
                     chooseIndex = 2;
                     break;
-                case "b":
-                    URL = new Uri($"https://api.github.com/user");
-                    chooseIndex = 0;
-                    break;
                 case "q":
                     exit = true;
                     break;
@@ -81,7 +84,7 @@ namespace GitHubExplorer {
 
         private static void OrgsMenu(OrgsData[] data, ref Uri URL, ref int chooseIndex, ref bool exit) {
             Console.WriteLine("\n\rWhat would you like to see next?\n\r" +
-                              "line number(Goto see the repo's members) \n\r" + "b: Back to MainPage\n\r" + "q: Exit\n\r");
+                              "line number(Goto see the Org's members) \n\r" + "b: Back to MainPage\n\r" + "q: Exit\n\r");
             var s = Console.ReadLine();
             var isNumber = int.TryParse(s, out var linksIndex);
             //Refresh the page if user typed number is out of boundary. 
@@ -98,6 +101,29 @@ namespace GitHubExplorer {
                 case "r":
                     URL = new Uri($"https://api.github.com/user/orgs");
                     chooseIndex = 2;
+                    break;
+                case "q":
+                    exit = true;
+                    break;
+            }
+        }
+
+        private static void OrgsMemberMenu(UserData[] data, ref Uri URL, ref int chooseIndex, ref bool exit) {
+            Console.WriteLine("\n\rWhat would you like to see next?\n\r" +
+                              "line number(Goto see the member's repos) \n\r" + "b: Back to MainPage\n\r" + "q: Exit\n\r");
+            var s = Console.ReadLine();
+            var isNumber = int.TryParse(s, out var linksIndex);
+            //Refresh the page if user typed number is out of boundary. 
+            if(isNumber && linksIndex > data.Length - 1) s = "r";
+            switch(s) {
+                default:
+                    if(isNumber) URL = new Uri($"https://api.github.com/users/{data[linksIndex].login}/repos?page=1&per_page=1000");
+                    UserName = data[linksIndex].login;
+                    chooseIndex = 4;
+                    break;
+                case "b":
+                    URL = new Uri("https://api.github.com/user");
+                    chooseIndex = 0;
                     break;
                 case "q":
                     exit = true;
