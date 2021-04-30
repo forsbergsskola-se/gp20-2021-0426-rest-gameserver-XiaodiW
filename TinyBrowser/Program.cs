@@ -59,13 +59,13 @@ namespace TinyBrowser {
                             $"{(i + ":").PadRight(3)} {PrettifyPrint(urls[i][0].TrimStart().TrimEnd())} ({urls[i][1]})");
                     urls[i][1] = NormalizeUrl(urls[i][1], hostname);
                 }                
-                Console.WriteLine("What would you want to continue? line number? b? f? h? q?");
+                Console.WriteLine("What would you want to continue? line number(Goto the link in the list) b?(Backward) f?(Forward) h?(History) g?(Goto any Link) q?(Quit)");
                 var s = Console.ReadLine();
                 //Check if the user type in a number.
                 bool isNumber = int.TryParse(s, out var linksIndex);
                 //Refresh the page if user typed number is out of boundary. 
                 if(isNumber && linksIndex > urls.Count - 1) s = "r";
-                
+                //If User chosen option is a number, then a newpage will be added in history
                 newPage = isNumber;
                 //if user chosen option is not "History", need to print all Results
                 isPrintResults = !Equals(s, "h");
@@ -85,6 +85,10 @@ namespace TinyBrowser {
                         break;
                     case "f":
                         if(history.Count - 1 > historyPointer) historyPointer++;
+                        break;
+                    case "g": Console.WriteLine("Please type in a URL. should be like 'http://www.google.com/'");
+                        url = Console.ReadLine();
+                        newPage = true;
                         break;
                     case "r": 
                         break;
