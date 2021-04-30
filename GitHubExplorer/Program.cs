@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reflection.Emit;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -13,20 +12,19 @@ namespace GitHubExplorer {
         private static string Token;
 
         private static async Task Main(string[] args) {
-            UserName = MicroSoftSecretsManager.LoadSecret("github-user");
-            UserName = "marczaku";
+            // UserName = MicroSoftSecretsManager.LoadSecret("github-user");
             Token = MicroSoftSecretsManager.LoadSecret("github-token");
-            Console.WriteLine($"User: {UserName}; Token: {Token}");
-
+            
             var exit = false;
             var chooseIndex = 0;
-            var URL = new Uri($"https://api.github.com/users/{UserName}");
+            var URL = new Uri($"https://api.github.com/user");
             while(!exit) {
                 var data = await RestApiCommunication(URL);
                 
                 switch(chooseIndex) {
                     case 0:
                         var userInfo = JsonSerializer.Deserialize<UserData>(data);
+                        UserName = userInfo.login;
                         Console.WriteLine(userInfo);
                         break;
                     case 1:
@@ -53,19 +51,19 @@ namespace GitHubExplorer {
                 var r = Console.ReadLine();
                 switch(r) {
                     case "0":
-                        URL = new Uri($"https://api.github.com/users/{UserName}");
+                        URL = new Uri($"https://api.github.com/user");
                         chooseIndex = 0;
                         break;
                     case "1":
-                        URL = new Uri($"https://api.github.com/users/{UserName}/repos");
+                        URL = new Uri($"https://api.github.com/user/repos");
                         chooseIndex = 1;
                         break;
                     case "2":
-                        URL = new Uri($"https://api.github.com/users/{UserName}/orgs");
+                        URL = new Uri($"https://api.github.com/user/orgs");
                         chooseIndex = 2;
                         break;
                     case "b":
-                        URL = new Uri($"https://api.github.com/users/{UserName}");
+                        URL = new Uri($"https://api.github.com/user");
                         chooseIndex = 0;
                         break;
                     case "q":
@@ -81,13 +79,11 @@ namespace GitHubExplorer {
 
         private static async Task<string> RestApiCommunication(Uri URL) {
             HttpClient client = new();
-            client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-            client.DefaultRequestHeaders.UserAgent.TryParseAdd(UserName);
-            var requestMeg = new HttpRequestMessage();
-            requestMeg.RequestUri = URL;
-            requestMeg.Method = HttpMethod.Get;
-            requestMeg.Headers.Authorization = AuthenticationHeaderValue.Parse(Token);
+            client.DefaultRequestHeaders.UserAgent.TryParseAdd("Github Explorer");
+            client.DefaultRequestHeaders.Authorization =  new AuthenticationHeaderValue("token",Token);
+            var requestMeg = new HttpRequestMessage {RequestUri = URL};
+            // Console.WriteLine(requestMeg.ToString());
             var received = client.SendAsync(requestMeg);
             // Console.WriteLine(await received);
             Console.WriteLine($"Server response status: {received.Result.StatusCode.ToString()}");
