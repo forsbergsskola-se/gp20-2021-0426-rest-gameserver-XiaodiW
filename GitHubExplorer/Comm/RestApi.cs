@@ -8,7 +8,7 @@ using GitHubExplorer.Security;
 
 namespace GitHubExplorer.Comm {
 
-    public abstract class RestApiComm {
+    public abstract class RestApi {
         private static string Token => MicroSoftSecretsManager.LoadSecret("github-token");
         protected Uri Url;
         

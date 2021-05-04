@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace GitHubExplorer.Comm {
 
-    public class RestApiPost : RestApiComm {
+    public class RestApiPost : RestApi {
         private readonly object _obj;
         public RestApiPost(Uri url, object obj) {
             Url = url;

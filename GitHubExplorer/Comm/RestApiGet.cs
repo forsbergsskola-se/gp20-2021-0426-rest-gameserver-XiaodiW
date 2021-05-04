@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace GitHubExplorer.Comm {
 
-    public class RestApiGet : RestApiComm {
+    public class RestApiGet : RestApi {
         public RestApiGet(Uri url) {
             Url = url;
         }
