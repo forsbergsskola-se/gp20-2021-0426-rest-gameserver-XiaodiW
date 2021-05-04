@@ -2,7 +2,10 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GitHubExplorer.Data;
 using GitHubExplorer.Security;
@@ -13,6 +16,7 @@ namespace GitHubExplorer {
         private static string UserName;
         private static string Token;
         private static IResponseDate selectedData;
+        private static IssueData _issue;
 
         private static async Task Main(string[] args) {
             Token = MicroSoftSecretsManager.LoadSecret("github-token");
@@ -20,7 +24,9 @@ namespace GitHubExplorer {
             var chosenIndex =0;
             var url = new Uri("https://api.github.com/user");
             while(!exit) {
-                var responseData = await RestApiCommunication(url);
+                var responseData = chosenIndex == 6 
+                    ? await RestApiCommunication(url,_issue) 
+                    : await RestApiCommunication(url);
                 ResponseDataHandler(ref chosenIndex, responseData, ref url, ref exit);
             }
         }
@@ -43,6 +49,28 @@ namespace GitHubExplorer {
             client.Dispose();
             return data;
         }
+        
+        private static async Task<string> RestApiCommunication(Uri url, IssueData issue) {
+            HttpClient client = new();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+            client.DefaultRequestHeaders.UserAgent.TryParseAdd("Github Explorer");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", Token);
+            var requestMeg = new HttpRequestMessage {RequestUri = url};
+            requestMeg.Method = HttpMethod.Post;
+            requestMeg.Content = new StringContent(JsonSerializer.Serialize(issue));
+            Console.WriteLine(requestMeg.ToString());
+            var received = client.SendAsync(requestMeg);
+            // Console.WriteLine(await received);
+            // Console.WriteLine($"Server response status: {received.Result.StatusCode.ToString()}");
+            var stream = await received.Result.Content.ReadAsStreamAsync();
+            var reader = new StreamReader(stream);
+            var data = await reader.ReadToEndAsync();
+            // Console.WriteLine(data);
+            client.Dispose();
+            return data;
+        }
+
 
         private static void ResponseDataHandler(ref int chosenIndex, string data, ref Uri url, ref bool exit) {
             switch(chosenIndex) {
@@ -177,8 +205,10 @@ namespace GitHubExplorer {
             switch(s) {
                 default:
                     if(isNumber) {
-                        var issue = data[linksIndex].issues_url;
-                        url = new Uri(issue.Substring(0,issue.Length-9));
+                        var regex = new Regex("(.*?/issues)");
+                        var issuesUrl = regex.Match(data[linksIndex].issues_url).Groups[0].Value;
+                        url = new Uri(issuesUrl);
+                        Console.WriteLine($"URL {url}");
                         selectedData = data[linksIndex];
                     }
                     chooseIndex = 5;
@@ -195,6 +225,47 @@ namespace GitHubExplorer {
                     exit = true;
                     break;
             }
+        }
+        private static void IssuesMenu(IssueData[] data, ref Uri url, ref int chooseIndex, ref bool exit) {
+            Console.WriteLine("\n\rWhat would you like to see next?\n\r" + "c:  create new issue\n\r" +
+                              $"[0..{data.Length - 1}]: Goto see the Issue's detail \n\r" + "b:  Back to MainPage\n\r" +
+                              "q:  Exit\n\r");
+            var s = Console.ReadLine();
+            var isNumber = int.TryParse(s, out var linksIndex);
+            //Refresh the page if user typed number is out of boundary. 
+            if(isNumber && linksIndex > data.Length - 1) s = "r";
+            switch(s) {
+                // default:
+                //     if(isNumber) {
+                //         url = new Uri(data[linksIndex].url);
+                //         Console.WriteLine($"URL {url}");
+                //         selectedData = data[linksIndex];
+                //     }
+                //     chooseIndex = 7;
+                //     break;
+                case "c":
+                    _issue = CreateIssue();
+                    chooseIndex = 6;
+                    break;
+                case "b":
+                    url = new Uri("https://api.github.com/user");
+                    chooseIndex = 0;
+                    break;
+                case "r":
+                    url = new Uri("https://api.github.com/user/repos");
+                    chooseIndex = 2;
+                    break;
+                case "q":
+                    exit = true;
+                    break;
+            }
+        }
+
+        private static IssueData CreateIssue() {
+            var issue = new IssueData();
+            Console.WriteLine("Type in new issue' title:");
+            issue.title = Console.ReadLine();
+            return issue;
         }
     }
 

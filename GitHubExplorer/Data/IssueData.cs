@@ -1,6 +1,6 @@
 namespace GitHubExplorer.Data {
 
-    public class IssueData {
+    public class IssueData: IResponseDate {
         public string url { get; set; }
         public string repository_url { get; set; }
         public string labels_url { get; set; }
@@ -28,6 +28,13 @@ namespace GitHubExplorer.Data {
                 _title = string.Concat(title.Substring(0, 15), "...", title.Substring(title.Length - 8, 7));
             else _title = title.PadRight(25);
             return $"{_title} {url}";
+        }
+        public string GetName() {
+            return title;
+        }
+
+        public string GetUrl() {
+            return url;
         }
     }
 
