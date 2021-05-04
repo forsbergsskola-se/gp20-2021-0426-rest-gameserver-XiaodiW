@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -6,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GitHubExplorer.Comm;
 using GitHubExplorer.Data;
+using GitHubExplorer.Menu;
 using GitHubExplorer.Security;
 
 namespace GitHubExplorer {
@@ -39,7 +41,10 @@ namespace GitHubExplorer {
                     var userInfo = JsonSerializer.Deserialize<UserData>(data);
                     UserName = userInfo.login;
                     Console.WriteLine(userInfo);
-                    MainMenu(ref url, ref chosenIndex, ref exit);
+                    // MainMenu(ref url, ref chosenIndex, ref exit);
+                    var usersInfo = new [] {userInfo};
+                    var mainMenu = new MainMenu(usersInfo);
+                    mainMenu.DoMenu(ref url, ref chosenIndex, ref exit);
                     break;
                 case 1:
                     var reposInfo = JsonSerializer.Deserialize<ReposData[]>(data);
@@ -51,7 +56,9 @@ namespace GitHubExplorer {
                     var orgsInfo = JsonSerializer.Deserialize<OrgsData[]>(data);
                     Console.WriteLine($"{UserName}'s Organizations");
                     for(var i = 0; i < orgsInfo.Length; i++) Console.WriteLine($"{i}: {orgsInfo[i]}");
-                    OrgsMenu(orgsInfo, ref url, ref chosenIndex, ref exit);
+                    // OrgsMenu(orgsInfo, ref url, ref chosenIndex, ref exit);
+                    var orgsMenu = new OrgsMenu(orgsInfo);
+                    orgsMenu.DoMenu(ref url, ref chosenIndex, ref exit);
                     break;
                 case 3:
                     var memberInfo = JsonSerializer.Deserialize<UserData[]>(data);
@@ -99,7 +106,7 @@ namespace GitHubExplorer {
             }
         }
 
-        private static void OrgsMenu(OrgsData[] data, ref Uri url, ref int chooseIndex, ref bool exit) {
+        /*private static void OrgsMenu(OrgsData[] data, ref Uri url, ref int chooseIndex, ref bool exit) {
             Console.WriteLine("\n\rWhat would you like to see next?\n\r" +
                               $"[0..{data.Length - 1}]: Goto see the Org's members \n\r" + "b:  Back to MainPage\n\r" +
                               "q:  Exit\n\r");
@@ -127,7 +134,7 @@ namespace GitHubExplorer {
                     exit = true;
                     break;
             }
-        }
+        }*/
 
         private static void OrgsMemberMenu(UserData[] data, ref Uri url, ref int chooseIndex, ref bool exit) {
             Console.WriteLine("\n\rWhat would you like to see next?\n\r" +
