@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using GitHubExplorer.Comm;
 using GitHubExplorer.Data;
 using GitHubExplorer.Security;
 
@@ -14,64 +12,27 @@ namespace GitHubExplorer {
 
     internal class Program {
         private static string UserName;
-        private static string Token;
         private static IResponseDate selectedData;
         private static IssueData _issue;
 
         private static async Task Main(string[] args) {
-            Token = MicroSoftSecretsManager.LoadSecret("github-token");
             var exit = false;
             var chosenIndex =0;
             var url = new Uri("https://api.github.com/user");
             while(!exit) {
-                var responseData = chosenIndex == 6 
-                    ? await RestApiCommunication(url,_issue) 
-                    : await RestApiCommunication(url);
+                string responseData;
+                if(chosenIndex == 6) {
+                    var restPost = new RestApiPost(url, _issue);
+                    responseData = await restPost.Post();
+                    goto response;
+                }
+                var restGet = new RestApiGet(url);
+                responseData = await restGet.Get();
+                response :
                 ResponseDataHandler(ref chosenIndex, responseData, ref url, ref exit);
             }
         }
-
-        private static async Task<string> RestApiCommunication(Uri url) {
-            HttpClient client = new();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-            client.DefaultRequestHeaders.UserAgent.TryParseAdd("Github Explorer");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", Token);
-            var requestMeg = new HttpRequestMessage {RequestUri = url};
-            // Console.WriteLine(requestMeg.ToString());
-            var received = client.SendAsync(requestMeg);
-            // Console.WriteLine(await received);
-            // Console.WriteLine($"Server response status: {received.Result.StatusCode.ToString()}");
-            var stream = await received.Result.Content.ReadAsStreamAsync();
-            var reader = new StreamReader(stream);
-            var data = await reader.ReadToEndAsync();
-            // Console.WriteLine(data);
-            client.Dispose();
-            return data;
-        }
         
-        private static async Task<string> RestApiCommunication(Uri url, IssueData issue) {
-            HttpClient client = new();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-            client.DefaultRequestHeaders.UserAgent.TryParseAdd("Github Explorer");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", Token);
-            var requestMeg = new HttpRequestMessage {RequestUri = url};
-            requestMeg.Method = HttpMethod.Post;
-            requestMeg.Content = new StringContent(JsonSerializer.Serialize(issue));
-            Console.WriteLine(requestMeg.ToString());
-            var received = client.SendAsync(requestMeg);
-            // Console.WriteLine(await received);
-            // Console.WriteLine($"Server response status: {received.Result.StatusCode.ToString()}");
-            var stream = await received.Result.Content.ReadAsStreamAsync();
-            var reader = new StreamReader(stream);
-            var data = await reader.ReadToEndAsync();
-            // Console.WriteLine(data);
-            client.Dispose();
-            return data;
-        }
-
-
         private static void ResponseDataHandler(ref int chosenIndex, string data, ref Uri url, ref bool exit) {
             switch(chosenIndex) {
                 case 0:
