@@ -20,19 +20,23 @@ namespace GitHubExplorer.Menu {
             }
             Console.WriteLine("********************************");
 
-            var s = Console.ReadLine();
-            var isNumber = int.TryParse(s, out var linksIndex);
-            if(isNumber) {
-                s = "n";
-                if(linksIndex > Data.Length - 1 || linksIndex < 0) s = "p";
-            }
-            if(elements.ContainsKey(s)) {
-                Url = elements[s].url;
-                ChooseIndex = elements[s].chooseIndex;
-                if(s == "n") {
-                    Url = UrlMethod(Data[linksIndex]);
-                    SelectedData = Data[linksIndex];
+            while(true) {
+                var s = Console.ReadLine();
+                var isNumber = int.TryParse(s, out var linksIndex);
+                if(isNumber) {
+                    s = "n";
+                    if(linksIndex > Data.Length - 1 || linksIndex < 0) s = "p";
                 }
+                if(elements.ContainsKey(s)) {
+                    Url = elements[s].url;
+                    ChooseIndex = elements[s].chooseIndex;
+                    if(s == "n") {
+                        Url = UrlMethod(Data[linksIndex]);
+                        SelectedData = Data[linksIndex];
+                    }
+                    break;
+                }
+                Console.WriteLine("Type in a correct key! Redo it please!");
             }
         }
 

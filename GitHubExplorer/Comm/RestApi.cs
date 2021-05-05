@@ -21,7 +21,7 @@ namespace GitHubExplorer.Comm {
             var requestMeg = new HttpRequestMessage {RequestUri = url};
             requestMeg.Method = method;
             if(obj != null) requestMeg.Content = new StringContent(JsonSerializer.Serialize(obj));
-            Console.WriteLine(requestMeg.ToString());
+            // Console.WriteLine(requestMeg.ToString());
             var received = client.SendAsync(requestMeg);
             
             Console.WriteLine($"Server response status: {received.Result.StatusCode.ToString()}");
