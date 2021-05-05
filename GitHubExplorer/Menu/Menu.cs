@@ -12,6 +12,7 @@ namespace GitHubExplorer.Menu {
         private static IResponseDate SelectedData;
 
         private static void DoMenu(Dictionary<string, MenuElement> elements, Func<IResponseDate, Uri> UrlMethod) {
+            Console.WriteLine("********************************");
             Console.WriteLine("What would you like to see next?");
             foreach(var element in elements) {
                 var prefix = element.Key == "n" ? string.Empty : element.Key + ": ";
@@ -122,7 +123,9 @@ namespace GitHubExplorer.Menu {
             Data = data;
             Console.WriteLine($"Repository {Program.selectedData.GetName()}'s Issues");
             for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
-            DoMenu(new MenuElement().DefaultElements(),UrlEmputy);
+            var elements = new MenuElement().DefaultElements();
+            elements.Add("c", new MenuElement("c",$"Create a new Issue in Repository of {Program.selectedData.GetName()}",url,6));
+            DoMenu(elements,UrlReposIssue);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;

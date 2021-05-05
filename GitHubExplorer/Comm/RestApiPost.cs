@@ -12,7 +12,7 @@ namespace GitHubExplorer.Comm {
         }
 
         public async Task<string> Post() {
-            return await DoComm(Url,HttpMethod.Get, _obj);
+            return await DoComm(Url,HttpMethod.Post, _obj);
         }
     }
 

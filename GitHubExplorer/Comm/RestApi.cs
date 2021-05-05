@@ -24,7 +24,7 @@ namespace GitHubExplorer.Comm {
             // Console.WriteLine(requestMeg.ToString());
             var received = client.SendAsync(requestMeg);
             
-            // Console.WriteLine($"Server response status: {received.Result.StatusCode.ToString()}");
+            Console.WriteLine($"Server response status: {received.Result.StatusCode.ToString()}");
             var stream = await received.Result.Content.ReadAsStreamAsync();
             var reader = new StreamReader(stream);
             string data = await reader.ReadToEndAsync();

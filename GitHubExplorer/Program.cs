@@ -12,15 +12,13 @@ namespace GitHubExplorer {
     internal class Program {
         public static string UserName;
         public static IResponseDate selectedData;
-        private static IssueData _issue;
-
         private static async Task Main(string[] args) {
             var chosenIndex =0;
             var url = new Uri("https://api.github.com/user");
             while(chosenIndex >=0) {
                 string responseData;
                 if(chosenIndex == 6) {
-                    var restPost = new RestApiPost(url, _issue);
+                    var restPost = new RestApiPost(url, CreateIssue());
                     responseData = await restPost.Post();
                     goto response;
                 }
@@ -57,6 +55,10 @@ namespace GitHubExplorer {
                 case 5:
                     var issuesInfo = JsonSerializer.Deserialize<IssueData[]>(data);
                     Menu.Menu.ReposIssuesMenu(issuesInfo,ref url,ref chosenIndex,ref selectedData);
+                    break;
+                case 6:
+                    url = new Uri(selectedData.GetUrl()+ "/issues");
+                    chosenIndex = 5;
                     break;
             }
         }
