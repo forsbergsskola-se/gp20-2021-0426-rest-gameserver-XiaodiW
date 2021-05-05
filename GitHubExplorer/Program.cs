@@ -60,6 +60,11 @@ namespace GitHubExplorer {
                     url = new Uri(selectedData.GetUrl()+ "/issues");
                     chosenIndex = 5;
                     break;
+                case 7:
+                    var issue = JsonSerializer.Deserialize<IssueData>(data);
+                    var issues = new[] {issue};
+                    Menu.Menu.IssuesDetailMenu(issues,ref url,ref chosenIndex,ref selectedData);
+                    break;
             }
         }
         

@@ -125,7 +125,24 @@ namespace GitHubExplorer.Menu {
             for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
             var elements = new MenuElement().DefaultElements();
             elements.Add("c", new MenuElement("c",$"Create a new Issue in Repository of {Program.selectedData.GetName()}",url,6));
-            DoMenu(elements,UrlReposIssue);
+            elements.Add("n", new MenuElement("n",$"[0..{Data.Length - 1}]: Select a Issue and see its information",null,7));
+            DoMenu(elements,UrlIssueDetail);
+            url = Url;
+            chooseIndex = ChooseIndex;
+            selectedData = SelectedData;
+        }
+        
+        private static Uri UrlIssueDetail(IResponseDate data) {
+            return new($"{data.GetUrl()}");
+        }
+        
+        public static void IssuesDetailMenu(IResponseDate[] data, ref Uri url, ref int chooseIndex,
+            ref IResponseDate selectedData) {
+            Data = data;
+            Console.WriteLine($"Issues {Program.selectedData.GetName()}'s information");
+            for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
+            var elements = new MenuElement().DefaultElements();
+            DoMenu(elements,UrlIssueDetail);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
