@@ -54,18 +54,20 @@ namespace GitHubExplorer {
             }
         }
         
-        public static void MainMenu(IResponseDate[] data, ref Uri url, ref int chooseIndex,ref IResponseDate selectedData) {
+        public static void MainMenu(IResponseDate data, ref Uri url, ref int chooseIndex,ref IResponseDate selectedData) {
             RecentLevelTitle = string.Empty;
             NextLevelTitle = string.Empty;
             NextChooseIndex = 0;
-            Data = data;
-            DoMenu(UrlMain);
+            Console.WriteLine(data);
+            var usersInfo = new [] {data};
+            Data = usersInfo;
+            DoMenu(UrlEmputy);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
         }
 
-        private static Uri UrlMain(IResponseDate data) {
+        private static Uri UrlEmputy(IResponseDate data) {
             return new Uri("");
         }
         
@@ -74,6 +76,8 @@ namespace GitHubExplorer {
             NextLevelTitle = "members";
             NextChooseIndex = 3;
             Data = data;
+            Console.WriteLine($"{Program.UserName}'s Organizations");
+            for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
             DoMenu(UrlOrgsMembers);
             url = Url;
             chooseIndex = ChooseIndex;
@@ -89,6 +93,8 @@ namespace GitHubExplorer {
             RecentLevelTitle = "Repo";
             NextLevelTitle = "issues";
             NextChooseIndex = 5;
+            Console.WriteLine($"{Program.UserName}'s Repositories");
+            for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
             Data = data;
             DoMenu(UrlReposIssue);
             url = Url;
@@ -108,6 +114,10 @@ namespace GitHubExplorer {
             NextLevelTitle = "Repositories";
             NextChooseIndex = 4;
             Data = data;
+            Console.WriteLine($"{Program.selectedData.GetName()}'s Members:");
+            for(var i = 0; i < data.Length; i++)
+                Console.WriteLine(
+                    $"{string.Concat(i, ':').PadRight(3)}{data[i].GetName().PadRight(20)}({data[i].GetUrl()})");
             DoMenu(UrlMemberRepos);
             url = Url;
             chooseIndex = ChooseIndex;
@@ -118,6 +128,33 @@ namespace GitHubExplorer {
             return new Uri(
                 $"https://api.github.com/users/{data.GetName()}/repos?page=1&per_page=1000");
         }
+        
+        public static void MemberReposMenu(IResponseDate[] data, ref Uri url, ref int chooseIndex,ref IResponseDate selectedData) {
+            RecentLevelTitle = string.Empty;
+            NextLevelTitle = string.Empty;
+            NextChooseIndex = 0;
+            Data = data;
+            Console.WriteLine($"{Program.selectedData.GetName()}'s Repositories");
+            for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
+            DoMenu(UrlEmputy);
+            url = Url;
+            chooseIndex = ChooseIndex;
+            selectedData = SelectedData;
+        }
+        
+        public static void ReposIssuesMenu(IResponseDate[] data, ref Uri url, ref int chooseIndex,ref IResponseDate selectedData) {
+            RecentLevelTitle = string.Empty;
+            NextLevelTitle = string.Empty;
+            NextChooseIndex = 0;
+            Data = data;
+            Console.WriteLine($"Repository {Program.selectedData.GetName()}'s Issues");
+            for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
+            DoMenu(UrlEmputy);
+            url = Url;
+            chooseIndex = ChooseIndex;
+            selectedData = SelectedData;
+        }
+        
     }
 
 }

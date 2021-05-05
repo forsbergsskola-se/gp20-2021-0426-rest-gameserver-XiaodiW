@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -12,8 +10,8 @@ using GitHubExplorer.Security;
 namespace GitHubExplorer {
 
     internal class Program {
-        private static string UserName;
-        private static IResponseDate selectedData;
+        public static string UserName;
+        public static IResponseDate selectedData;
         private static IssueData _issue;
 
         private static async Task Main(string[] args) {
@@ -38,41 +36,27 @@ namespace GitHubExplorer {
                 case 0:
                     var userInfo = JsonSerializer.Deserialize<UserData>(data);
                     UserName = userInfo.login;
-                    Console.WriteLine(userInfo);
-                    var usersInfo = new [] {userInfo};
-                    Menu.MainMenu(usersInfo,ref url,ref chosenIndex,ref selectedData);
+                    Menu.MainMenu(userInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 1:
                     var reposInfo = JsonSerializer.Deserialize<ReposData[]>(data);
-                    Console.WriteLine($"{UserName}'s Repositories");
-                    for(var i = 0; i < reposInfo.Length; i++) Console.WriteLine($"{i}: {reposInfo[i]}");
                     Menu.RepoMenu(reposInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 2:
                     var orgsInfo = JsonSerializer.Deserialize<OrgsData[]>(data);
-                    Console.WriteLine($"{UserName}'s Organizations");
-                    for(var i = 0; i < orgsInfo.Length; i++) Console.WriteLine($"{i}: {orgsInfo[i]}");
                     Menu.OrgsMenu(orgsInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 3:
                     var memberInfo = JsonSerializer.Deserialize<UserData[]>(data);
-                    Console.WriteLine($"{selectedData.GetName()}'s Members:");
-                    for(var i = 0; i < memberInfo.Length; i++)
-                        Console.WriteLine(
-                            $"{string.Concat(i, ':').PadRight(3)}{memberInfo[i].login.PadRight(20)}({memberInfo[i].url})");
                     Menu.OrgsMemberMenu(memberInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 4:
                     var memberRepo = JsonSerializer.Deserialize<ReposData[]>(data);
-                    Console.WriteLine($"{selectedData.GetName()}'s Repositories");
-                    for(var i = 0; i < memberRepo.Length; i++) Console.WriteLine($"{i}: {memberRepo[i]}");
-                    Menu.MainMenu(memberRepo,ref url,ref chosenIndex,ref selectedData);
+                    Menu.MemberReposMenu(memberRepo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 5:
                     var issuesInfo = JsonSerializer.Deserialize<IssueData[]>(data);
-                    Console.WriteLine($"Repository {selectedData.GetName()}'s Issues");
-                    for(var i = 0; i < issuesInfo.Length; i++) Console.WriteLine($"{i}: {issuesInfo[i]}");
-                    Menu.MainMenu(issuesInfo,ref url,ref chosenIndex,ref selectedData);
+                    Menu.ReposIssuesMenu(issuesInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
             }
         }
