@@ -36,27 +36,27 @@ namespace GitHubExplorer {
                 case 0:
                     var userInfo = JsonSerializer.Deserialize<UserData>(data);
                     UserName = userInfo.login;
-                    Menu.MainMenu(userInfo,ref url,ref chosenIndex,ref selectedData);
+                    Menu.Menu.MainMenu(userInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 1:
                     var reposInfo = JsonSerializer.Deserialize<ReposData[]>(data);
-                    Menu.RepoMenu(reposInfo,ref url,ref chosenIndex,ref selectedData);
+                    Menu.Menu.RepoMenu(reposInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 2:
                     var orgsInfo = JsonSerializer.Deserialize<OrgsData[]>(data);
-                    Menu.OrgsMenu(orgsInfo,ref url,ref chosenIndex,ref selectedData);
+                    Menu.Menu.OrgsMenu(orgsInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 3:
                     var memberInfo = JsonSerializer.Deserialize<UserData[]>(data);
-                    Menu.OrgsMemberMenu(memberInfo,ref url,ref chosenIndex,ref selectedData);
+                    Menu.Menu.OrgsMemberMenu(memberInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 4:
                     var memberRepo = JsonSerializer.Deserialize<ReposData[]>(data);
-                    Menu.MemberReposMenu(memberRepo,ref url,ref chosenIndex,ref selectedData);
+                    Menu.Menu.MemberReposMenu(memberRepo,ref url,ref chosenIndex,ref selectedData);
                     break;
                 case 5:
                     var issuesInfo = JsonSerializer.Deserialize<IssueData[]>(data);
-                    Menu.ReposIssuesMenu(issuesInfo,ref url,ref chosenIndex,ref selectedData);
+                    Menu.Menu.ReposIssuesMenu(issuesInfo,ref url,ref chosenIndex,ref selectedData);
                     break;
             }
         }
