@@ -61,9 +61,9 @@ namespace GitHubExplorer {
                     chosenIndex = 5;
                     break;
                 case 7:
-                    var issue = JsonSerializer.Deserialize<IssueData>(data);
-                    var issues = new[] {issue};
-                    Menu.Menu.IssuesDetailMenu(issues,ref url,ref chosenIndex,ref selectedData);
+                    Console.WriteLine(data);
+                    var comments = JsonSerializer.Deserialize<CommentData[]>(data);
+                    Menu.Menu.IssueCommentsMenu(comments,ref url,ref chosenIndex,ref selectedData);
                     break;
             }
         }

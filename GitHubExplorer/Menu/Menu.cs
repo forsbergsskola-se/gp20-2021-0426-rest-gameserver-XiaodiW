@@ -18,6 +18,8 @@ namespace GitHubExplorer.Menu {
                 var prefix = element.Key == "n" ? string.Empty : element.Key + ": ";
                 Console.WriteLine($"{prefix}{element.Value.title}" );
             }
+            Console.WriteLine("********************************");
+
             var s = Console.ReadLine();
             var isNumber = int.TryParse(s, out var linksIndex);
             if(isNumber) {
@@ -32,7 +34,6 @@ namespace GitHubExplorer.Menu {
                     SelectedData = Data[linksIndex];
                 }
             }
-        
         }
 
         public static void MainMenu(IResponseDate data, ref Uri url, ref int chooseIndex,
@@ -125,24 +126,25 @@ namespace GitHubExplorer.Menu {
             for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
             var elements = new MenuElement().DefaultElements();
             elements.Add("c", new MenuElement("c",$"Create a new Issue in Repository of {Program.selectedData.GetName()}",url,6));
-            elements.Add("n", new MenuElement("n",$"[0..{Data.Length - 1}]: Select a Issue and see its information",null,7));
-            DoMenu(elements,UrlIssueDetail);
+            elements.Add("n", new MenuElement("n",$"[0..{Data.Length - 1}]: Select a Issue and see its Comments",null,7));
+            DoMenu(elements,UrlIssueComments);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
         }
         
-        private static Uri UrlIssueDetail(IResponseDate data) {
-            return new($"{data.GetUrl()}");
+        private static Uri UrlIssueComments(IResponseDate data) {
+            var issueData = (IssueData) data;
+            return new Uri($"{issueData.comments_url}");
         }
         
-        public static void IssuesDetailMenu(IResponseDate[] data, ref Uri url, ref int chooseIndex,
+        public static void IssueCommentsMenu(IResponseDate[] data, ref Uri url, ref int chooseIndex,
             ref IResponseDate selectedData) {
             Data = data;
-            Console.WriteLine($"Issues {Program.selectedData.GetName()}'s information");
+            Console.WriteLine($"Issues {Program.selectedData.GetName()}'s Comments");
             for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
             var elements = new MenuElement().DefaultElements();
-            DoMenu(elements,UrlIssueDetail);
+            DoMenu(elements,UrlEmputy);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
