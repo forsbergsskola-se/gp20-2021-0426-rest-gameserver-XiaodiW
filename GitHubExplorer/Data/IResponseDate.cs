@@ -1,4 +1,4 @@
-namespace GitHubExplorer {
+namespace GitHubExplorer.Data {
 
     public interface IResponseDate {
         string GetName();

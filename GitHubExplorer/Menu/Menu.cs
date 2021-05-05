@@ -11,7 +11,7 @@ namespace GitHubExplorer.Menu {
         private static int ChooseIndex;
         private static IResponseDate SelectedData;
 
-        private static void DoMenu(Dictionary<string, MenuElement> elements, Func<IResponseDate, Uri> UrlMethod) {
+        private static void GenerateMenu(Dictionary<string, MenuElement> elements, Func<IResponseDate, Uri> UrlMethod) {
             Console.WriteLine("********************************");
             Console.WriteLine("What would you like to see next?");
             foreach(var element in elements) {
@@ -45,15 +45,15 @@ namespace GitHubExplorer.Menu {
             Console.WriteLine(data);
             var usersInfo = new[] {data};
             Data = usersInfo;
-            DoMenu(new MenuElement().DefaultElements(),UrlEmputy);
+            var elements = new MenuElement().DefaultElements();
+            GenerateMenu(elements,UrlEmputy);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
         }
 
-        private static Uri UrlEmputy(IResponseDate data) {
-            return new("");
-        }
+        private static Uri UrlEmputy(IResponseDate data) => new Uri("");
+        
 
         public static void OrgsMenu(IResponseDate[] data, ref Uri url, ref int chooseIndex,
             ref IResponseDate selectedData) {
@@ -62,16 +62,14 @@ namespace GitHubExplorer.Menu {
             for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
             var elements = new MenuElement().DefaultElements();
             elements.Add("n", new MenuElement("n",$"[0..{Data.Length - 1}]: Select a Organization and see its members",null,3));
-            DoMenu(elements,UrlOrgsMembers);
+            GenerateMenu(elements,UrlOrgsMembers);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
         }
 
-        private static Uri UrlOrgsMembers(IResponseDate data) {
-            var orgData = (OrgsData) data;
-            return new Uri($"https://api.github.com/orgs/{orgData.login}/members?page=1&per_page=1000");
-        }
+        private static Uri UrlOrgsMembers(IResponseDate data) 
+            => new Uri($"https://api.github.com/orgs/{data.GetName()}/members?page=1&per_page=1000");
 
         public static void RepoMenu(IResponseDate[] data, ref Uri url, ref int chooseIndex,
             ref IResponseDate selectedData) {
@@ -80,7 +78,7 @@ namespace GitHubExplorer.Menu {
             Data = data;
             var elements = new MenuElement().DefaultElements();
             elements.Add("n", new MenuElement("n",$"[0..{Data.Length - 1}]: Select a Repository and see its Issues",null,5));
-            DoMenu(elements,UrlReposIssue);
+            GenerateMenu(elements,UrlReposIssue);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
@@ -102,22 +100,21 @@ namespace GitHubExplorer.Menu {
                     $"{string.Concat(i, ':').PadRight(3)}{data[i].GetName().PadRight(20)}({data[i].GetUrl()})");
             var elements = new MenuElement().DefaultElements();
             elements.Add("n", new MenuElement("n",$"[0..{Data.Length - 1}]: Select a Member and see its Repositories",null,4));
-            DoMenu(elements,UrlMemberRepos);
+            GenerateMenu(elements,UrlMemberRepos);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
         }
 
-        private static Uri UrlMemberRepos(IResponseDate data) {
-            return new($"https://api.github.com/users/{data.GetName()}/repos?page=1&per_page=1000");
-        }
+        private static Uri UrlMemberRepos(IResponseDate data) 
+            => new($"https://api.github.com/users/{data.GetName()}/repos?page=1&per_page=1000");
 
         public static void MemberReposMenu(IResponseDate[] data, ref Uri url, ref int chooseIndex,
             ref IResponseDate selectedData) {
             Data = data;
             Console.WriteLine($"{Program.selectedData.GetName()}'s Repositories");
             for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
-            DoMenu(new MenuElement().DefaultElements(),UrlEmputy);
+            GenerateMenu(new MenuElement().DefaultElements(),UrlEmputy);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
@@ -131,7 +128,7 @@ namespace GitHubExplorer.Menu {
             var elements = new MenuElement().DefaultElements();
             elements.Add("c", new MenuElement("c",$"Create a new Issue in Repository of {Program.selectedData.GetName()}",url,6));
             elements.Add("n", new MenuElement("n",$"[0..{Data.Length - 1}]: Select a Issue and see its Comments",null,7));
-            DoMenu(elements,UrlIssueComments);
+            GenerateMenu(elements,UrlIssueComments);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
@@ -148,7 +145,7 @@ namespace GitHubExplorer.Menu {
             Console.WriteLine($"Issues {Program.selectedData.GetName()}'s Comments");
             for(var i = 0; i < data.Length; i++) Console.WriteLine($"{i}: {data[i]}");
             var elements = new MenuElement().DefaultElements();
-            DoMenu(elements,UrlEmputy);
+            GenerateMenu(elements,UrlEmputy);
             url = Url;
             chooseIndex = ChooseIndex;
             selectedData = SelectedData;
