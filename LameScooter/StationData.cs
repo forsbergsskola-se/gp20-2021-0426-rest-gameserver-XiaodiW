@@ -1,6 +1,6 @@
 namespace LameScooter {
 
-    public class LameScooterStation {
+    public class StationData {
         public string id { get; set; }
         public string name { get; set; }
         public float x { get; set; }
@@ -15,6 +15,10 @@ namespace LameScooter {
         public string state { get; set; }
         public string[] networks { get; set; }
         public bool realTimeData { get; set; }
+
+        public override string ToString() {
+            return $"Station {name} has valid bikes of {bikesAvailable}.";
+        }
     }
 
 }

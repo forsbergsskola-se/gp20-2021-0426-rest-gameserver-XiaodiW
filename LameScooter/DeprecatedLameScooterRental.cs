@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LameScooter {
 
-    public class OfflineLameScooterRental : ILameScooterRental {
+    public class DeprecatedLameScooterRental : ILameScooterRental {
         private List<StationData> ReadOffineFile() {
-            var fileName = "scooters.json";
+            var fileName = "scooters.txt";
             var path = Path.Combine(Environment.CurrentDirectory, @"OffineData", fileName);
             try {
                 using var sr = new StreamReader(path);
                 var data = sr.ReadToEnd();
-                var result = JsonSerializer.Deserialize<List<StationData>>(data);
+                // var result = JsonSerializer.Deserialize<List<StationData>>(data);
+                var result = DeprecatedDeserialized(data);
                 return result;
             }
             catch(IOException e) {
@@ -36,6 +38,19 @@ namespace LameScooter {
                 Console.WriteLine($"{stationName} is not Valid");
                 throw;
             }
+        }
+
+        private static List<StationData> DeprecatedDeserialized(string data) {
+            List<StationData> result = new();
+            var regex = new Regex("(?<name>\\w*?)\\s*?:\\s*?(?<count>\\d*?)\\r\\n",RegexOptions.None);
+            if(regex.IsMatch(data))
+                foreach(Match match in regex.Matches(data)) {
+                    StationData temp = new StationData();
+                    temp.name = match.Groups["name"].Value;
+                    temp.bikesAvailable = int.Parse(match.Groups["count"].Value);
+                    result.Add(temp);
+                }
+            return result;
         }
     }
 
