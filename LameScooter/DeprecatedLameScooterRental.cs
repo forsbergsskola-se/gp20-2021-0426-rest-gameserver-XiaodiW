@@ -36,12 +36,12 @@ namespace LameScooter {
             try {
                 var data = ReadOffineFile().Where(a => a.name == stationName);
                 var station = data as StationData[] ?? data.ToArray();
-                if(!station.Any()) throw new InvalidDataException();
+                if(!station.Any()) throw new InvalidDataException($"{stationName} is not Valid");
                 var result = station.Select(a => a.bikesAvailable).FirstOrDefault();
                 return Task.FromResult(result);
             }
             catch(InvalidDataException e) {
-                Console.WriteLine($"{stationName} is not Valid");
+                Console.WriteLine(e.ToString());
                 throw;
             }
         }
