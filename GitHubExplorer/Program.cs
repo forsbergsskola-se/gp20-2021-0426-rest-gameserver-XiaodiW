@@ -12,6 +12,7 @@ namespace GitHubExplorer {
         public static IResponseDate selectedData;
 
         private static async Task Main(string[] args) {
+            //MenuDrive Mode
             if(args.Length == 0) {
                 var chosenIndex = 0;
                 var url = new Uri("https://api.github.com/user");
@@ -27,7 +28,9 @@ namespace GitHubExplorer {
                     response :
                     ResponseDataHandler(ref chosenIndex, responseData, ref url);
                 }
-            } else { await RestAPI(); }
+            } 
+            //RestAPI Mode
+            else { await RestAPI(); }
         }
 
 
