@@ -28,7 +28,8 @@ namespace LameScooter {
                 string data = await reader.ReadToEndAsync();
                 // Console.WriteLine(data);
                 client.Dispose();
-                var result = JsonSerializer.Deserialize<List<StationData>>(data);
+                var result = JsonSerializer.Deserialize<OnlineData>(data).stations;
+                // var result = JsonSerializer.Deserialize<List<StationData>>(data);
                 return result;
             }
             catch(IOException e) {
