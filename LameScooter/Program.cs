@@ -13,19 +13,16 @@ namespace LameScooter
                 if(args[0].Any(char.IsDigit)) throw new ArgumentException();
                 var validArgs = new string[] {"offline", "deprecated", "realtime"};
                 if(!validArgs.Contains(args[1].ToLower()))throw new ArgumentException();
-
-                switch(args[1].ToLower()) {
-                    case "offline":
-                        ILameScooterRental offlineData = new OfflineLameScooterRental();
-                        var result = offlineData.GetScooterCountInStation(args[0]).Result;
-                        Console.WriteLine($"Offiline: The available bike count in Station {args[0]} is {result}");
-                        break;
-                    case "deprecated":
-                        ILameScooterRental deprecatedData = new DeprecatedLameScooterRental();
-                        var result2 = deprecatedData.GetScooterCountInStation(args[0]).Result;
-                        Console.WriteLine($"Deprecated: The available bike count in Station {args[0]} is {result2}");
-                        break;
-                }
+                
+                ILameScooterRental rental = args[1].ToLower() switch {
+                    "offline" => new OfflineLameScooterRental(),
+                    "deprecated" => new DeprecatedLameScooterRental(),
+                    _ => null
+                };
+                if(rental == null) return;
+                
+                var result = rental.GetScooterCountInStation(args[0]).Result;
+                Console.WriteLine($"{rental.Method}: The available bike count in Station {args[0]} is {result}");
 
             }
             catch(ArgumentException e) {

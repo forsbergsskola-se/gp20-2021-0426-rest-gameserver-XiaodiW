@@ -24,6 +24,12 @@ namespace LameScooter {
             }
         }
 
+        public string Method { get; }
+
+        public OfflineLameScooterRental() {
+            Method = "Offline";
+        }
+
         public Task<int> GetScooterCountInStation(string stationName) {
             try {
                 var data = ReadOffineFile().Where(a => a.name == stationName);

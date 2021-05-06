@@ -26,6 +26,12 @@ namespace LameScooter {
             }
         }
 
+        public string Method { get; }
+
+        public DeprecatedLameScooterRental() {
+            Method = "Deprecated";
+        }
+
         public Task<int> GetScooterCountInStation(string stationName) {
             try {
                 var data = ReadOffineFile().Where(a => a.name == stationName);
