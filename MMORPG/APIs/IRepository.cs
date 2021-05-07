@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using MMORPG.Types;
 
-namespace MMORPG {
+namespace MMORPG.API {
 
     public interface IRepository
     {

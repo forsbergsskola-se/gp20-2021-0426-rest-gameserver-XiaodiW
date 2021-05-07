@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using MMORPG.Types;
 
-namespace MMORPG {
+namespace MMORPG.API {
 
     public class FileRepository : IRepository {
         private static readonly string fileName = "player.json";

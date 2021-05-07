@@ -1,7 +1,6 @@
 using System;
-using System.IO;
 
-namespace MMORPG {
+namespace MMORPG.Types {
 
     public class Player
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace MMORPG
+namespace MMORPG.Deprecated
 {
     public class WeatherForecast
     {
