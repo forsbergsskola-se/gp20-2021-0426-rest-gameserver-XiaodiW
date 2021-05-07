@@ -28,7 +28,7 @@ namespace LameScooter
 
             }
             catch(ArgumentException e) {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine(e.Message);
                 throw;
             }
         }

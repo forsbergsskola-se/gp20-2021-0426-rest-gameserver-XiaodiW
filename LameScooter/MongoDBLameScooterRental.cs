@@ -23,8 +23,7 @@ namespace LameScooter {
                 var result =  documents.Select(bsonDocument => BsonSerializer.Deserialize<StationData>(bsonDocument)).ToList();
                 return result;
             }
-            catch(IOException e) {
-                Console.WriteLine("The file could not be read:");
+            catch(MongoException e) {
                 Console.WriteLine(e.Message);
                 return null;
             }
@@ -45,7 +44,7 @@ namespace LameScooter {
                 return Task.FromResult(result);
             }
             catch(InvalidDataException e) {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine(e.Message);
                 throw;
             }
         }

@@ -32,8 +32,7 @@ namespace LameScooter {
                 // var result = JsonSerializer.Deserialize<List<StationData>>(data);
                 return result;
             }
-            catch(IOException e) {
-                Console.WriteLine("The file could not be read:");
+            catch(HttpRequestException e) {
                 Console.WriteLine(e.Message);
                 return null;
             }
