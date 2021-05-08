@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using MMORPG.API;
+using MMORPG.APIs;
 using MMORPG.Types;
 
 namespace MMORPG.Controllers {
