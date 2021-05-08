@@ -8,8 +8,8 @@ namespace MMORPG.API {
     {
         Task<Player> Get(Guid id);
         Task<Player[]> GetAll();
-        Task<Player> Create(string name);
-        Task<Player> Modify(Guid id, Player player);
+        Task<Player> Create(NewPlayer newPlayer);
+        Task<Player> Modify(Guid id, ModifiedPlayer modifiedPlayer);
         Task<Player> Delete(Guid id);
     }
 

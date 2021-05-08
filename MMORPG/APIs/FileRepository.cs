@@ -38,10 +38,10 @@ namespace MMORPG.API {
             return result.ToArray();
         }
 
-        public async Task<Player> Create(string name) {
+        public async Task<Player> Create(NewPlayer newPlayer) {
             var players = await ReadFile();
-            var newPlayer = new Player(name);
-            players.Add(newPlayer);
+            var player = new Player(newPlayer.Name);
+            players.Add(player);
             try {
                 await using var createStream = File.OpenWrite(path);
                 await JsonSerializer.SerializeAsync(createStream, players);
@@ -51,17 +51,19 @@ namespace MMORPG.API {
                 Console.WriteLine("The file could not be read:");
                 Console.WriteLine(e.Message);
             }
-            return newPlayer;
+            return player;
         }
 
-        public async Task<Player> Modify(Guid id, Player player) {
+        public async Task<Player> Modify(Guid id, ModifiedPlayer modifiedPlayer) {
+            var result = new Player(null);
             try {
                 var allPlayers = await ReadFile();
                 var index = -1;
                 for(var i = 0; i < allPlayers.Count; i++)
                     if(allPlayers[i].Id == id)
                         index = i;
-                allPlayers[index] = player;
+                allPlayers[index].Score = modifiedPlayer.Score;
+                result = allPlayers[index];
                 await using var createStream = File.Create(path);
                 await JsonSerializer.SerializeAsync(createStream, allPlayers);
             }
@@ -69,7 +71,7 @@ namespace MMORPG.API {
                 Console.WriteLine("The file could not be read:");
                 Console.WriteLine(e.Message);
             }
-            return player;
+            return result;
         }
 
         public async Task<Player> Delete(Guid id) {

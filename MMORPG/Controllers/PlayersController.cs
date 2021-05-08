@@ -25,11 +25,11 @@ namespace MMORPG.Controllers {
             return await Repository.GetAll();
         }
         [HttpPost("new")]
-        public async Task<Player> Create(string name) {
-            return await Repository.Create(name);
+        public async Task<Player> Create(NewPlayer newPlayer) {
+            return await Repository.Create(newPlayer);
         }
         [HttpPost]
-        public async Task<Player> Modify(Guid id, Player player) {
+        public async Task<Player> Modify(Guid id, ModifiedPlayer player) {
             return await Repository.Modify(id, player);
         }
         [HttpDelete]
