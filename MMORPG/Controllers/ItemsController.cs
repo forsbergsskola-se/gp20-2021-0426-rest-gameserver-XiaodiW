@@ -27,7 +27,7 @@ namespace MMORPG.Controllers {
         }
         [HttpPost("{playerId:guid}/items")]
         public async Task<Item> CreateItem(Guid playerId, NewItem item) {
-            return await Repository.CreateItem(playerId,item);
+            return await Repository.AddItem(playerId,item);
         }
         [HttpDelete("{playerId:guid}/items")]
         public async Task<Item> DeleteItem(Guid playerId, Guid itemId) {

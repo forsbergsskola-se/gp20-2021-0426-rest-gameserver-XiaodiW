@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace MMORPG.Types {
 
@@ -10,6 +11,7 @@ namespace MMORPG.Types {
         public int Level { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime CreationTime { get; set; }
+        public List<Item> Items { get; set; }
         
         public Player(string name) {
             Id = Guid.NewGuid();
@@ -18,9 +20,8 @@ namespace MMORPG.Types {
             Level = 0;
             IsDeleted = false;
             CreationTime = DateTime.Now;
+            Items = new List<Item>();
         }
-
-
     }
 
 }

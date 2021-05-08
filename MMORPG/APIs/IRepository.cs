@@ -14,7 +14,7 @@ namespace MMORPG.APIs {
 
         Task<Item> GetItem(Guid playerId, Guid itemId);
         Task<Item[]> GetAllItems(Guid playerId);
-        Task<Item> CreateItem(Guid playerId, NewItem item);
+        Task<Item> AddItem(Guid playerId, NewItem item);
         Task<Item> DeleteItem(Guid playerId, Guid itemId);
 
     }

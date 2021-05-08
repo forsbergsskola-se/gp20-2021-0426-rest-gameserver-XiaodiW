@@ -2,24 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
+using System.Text;
 using System.Threading.Tasks;
 using MMORPG.Types;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MMORPG.APIs {
 
     public class FileRepository : IRepository {
         private static readonly string fileName = "player.json";
-        private static readonly string fileNameItem = "item.json";
-        private readonly string path = Path.Combine(Environment.CurrentDirectory, @"OffineData", fileName);
-        private readonly string itemPath = Path.Combine(Environment.CurrentDirectory, @"OffineData", fileNameItem);
-
+        private readonly string _path = Path.Combine(Environment.CurrentDirectory, @"OfflineData", fileName);
 
         private async Task<List<Player>> ReadFile() {
             try {
-                using var sr = new StreamReader(path);
+                using var sr = new StreamReader(_path);
                 var data = await sr.ReadToEndAsync();
-                var result = JsonSerializer.Deserialize<List<Player>>(data);
+                var result = JsonConvert.DeserializeObject<List<Player>>(data);
                 sr.Close();
                 return result;
             }
@@ -38,15 +37,17 @@ namespace MMORPG.APIs {
 
         public async Task<Player[]> GetAll() {
             var result = await ReadFile();
+            if(result == null) result = new List<Player>();
             return result.ToArray();
         }
 
         public async Task<Player> Create(NewPlayer newPlayer) {
             var players = await ReadFile();
+            if(players == null) players = new List<Player>();
             var player = new Player(newPlayer.Name);
             players.Add(player);
             try {
-                await using var createStream = File.OpenWrite(path);
+                await using var createStream = File.OpenWrite(_path);
                 await JsonSerializer.SerializeAsync(createStream, players);
                 createStream.Close();
             }
@@ -67,7 +68,7 @@ namespace MMORPG.APIs {
                         index = i;
                 allPlayers[index].Score = modifiedPlayer.Score;
                 result = allPlayers[index];
-                await using var createStream = File.Create(path);
+                await using var createStream = File.Create(_path);
                 await JsonSerializer.SerializeAsync(createStream, allPlayers);
             }
             catch(IOException e) {
@@ -85,7 +86,7 @@ namespace MMORPG.APIs {
                     if(allPlayers[i].Id == id)
                         result = allPlayers[i];
                 allPlayers.Remove(result);
-                await using var createStream = File.Create(path);
+                await using var createStream = File.Create(_path);
                 await JsonSerializer.SerializeAsync(createStream, allPlayers);
             }
             catch(IOException e) {
@@ -95,62 +96,72 @@ namespace MMORPG.APIs {
             return result;
         }
 
-        private async Task<List<Item>> ReadItemFile() {
+        public async Task<Item> GetItem(Guid playerId, Guid itemId) {
+            Item result = null;
             try {
-                using var sr = new StreamReader(itemPath);
-                var data = await sr.ReadToEndAsync();
-                var result = JsonSerializer.Deserialize<List<Item>>(data);
-                sr.Close();
-                return result;
+                var data = await ReadFile();
+                var player = data.FirstOrDefault(a => a.Id == playerId);
+                if(player == null) throw new NullReferenceException("The Player ID is not exist.");
+                result = player.Items.Find(a => a.Id == itemId);
+                if(result == null) throw new NullReferenceException("The Item ID is not exist.");
             }
             catch(IOException e) {
                 Console.WriteLine("The file could not be read:");
                 Console.WriteLine(e.Message);
-                return null;
             }
-        }
-        public async Task<Item> GetItem(Guid playerId, Guid itemId) {
-            var data = await ReadItemFile();
-            var result = data.FirstOrDefault(a => a.Id == itemId && a.Player.Id == playerId);
-            return result;        
+            return result;
         }
 
         public async Task<Item[]> GetAllItems(Guid playerId) {
-            var data = await ReadItemFile();
-            var result = data.Where(a => a.Player.Id == playerId).ToArray();
+            Item[] result = null;
+            try {
+                var data = await ReadFile();
+                var player = data.FirstOrDefault(a => a.Id == playerId);
+                if(player == null) throw new NullReferenceException("The player ID is not exist.");
+                result = player.Items.ToArray();
+            }
+            catch(IOException e) {
+                Console.WriteLine("The file could not be read:");
+                Console.WriteLine(e.Message);
+            }
             return result;
-            
         }
 
-        public async Task<Item> CreateItem(Guid playerId, NewItem item) {
-            var items = await ReadItemFile();
-            if(items == null) items = new List<Item>();
-                var players = await ReadFile();
-            var player = players.FirstOrDefault(a => a.Id == playerId);
-            var newItem = new Item(player,item.Name);
-            items.Add(newItem);
+        public async Task<Item> AddItem(Guid playerId, NewItem item) {
+            Item result = null;
             try {
-                await using var createStream = File.OpenWrite(itemPath);
-                await JsonSerializer.SerializeAsync(createStream, items);
+                var data = await ReadFile();
+                var player = data.FirstOrDefault(a => a.Id == playerId);
+                if(player == null) throw new NullReferenceException("The player ID is not exist.");
+                result = new Item(player, item.Name);
+                player.Items.Add(result);
+                await using var createStream = File.Create(_path);
+                var str = JsonConvert.SerializeObject(data, Formatting.None, new JsonSerializerSettings {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+                var sendData = Encoding.UTF8.GetBytes(str);
+                // await JsonSerializer.SerializeAsync(createStream, data);
+                await createStream.WriteAsync(sendData);
                 createStream.Close();
             }
             catch(IOException e) {
                 Console.WriteLine("The file could not be read:");
                 Console.WriteLine(e.Message);
             }
-            return newItem;
+            return result;
         }
 
         public async Task<Item> DeleteItem(Guid playerId, Guid itemId) {
             Item result = null;
             try {
-                var allItems = await ReadItemFile();
-                for(var i = 0; i < allItems.Count; i++)
-                    if(allItems[i].Id == itemId)
-                        result = allItems[i];
-                allItems.Remove(result);
-                await using var createStream = File.Create(itemPath);
-                await JsonSerializer.SerializeAsync(createStream, allItems);
+                var data = await ReadFile();
+                var player = data.FirstOrDefault(a => a.Id == playerId);
+                if(player == null) throw new NullReferenceException("The Player ID is not exist.");
+                result = player.Items.Find(a => a.Id == itemId);
+                if(result == null) throw new NullReferenceException("The Item ID is not exist.");
+                player.Items.Remove(result);
+                await using var createStream = File.Create(_path);
+                await JsonSerializer.SerializeAsync(createStream, data);
             }
             catch(IOException e) {
                 Console.WriteLine("The file could not be read:");
