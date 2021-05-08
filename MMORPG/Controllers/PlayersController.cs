@@ -6,7 +6,7 @@ using MMORPG.Types;
 
 namespace MMORPG.Controllers {
     [ApiController]
-    [Route("api/player")]
+    [Route("api/players")]
 
     public class PlayersController: ControllerBase {
         
@@ -16,23 +16,23 @@ namespace MMORPG.Controllers {
             Repository = repo;
         }
 
-        [HttpGet] 
+        [HttpGet("{id:guid}")] 
         public async Task<Player> Get(Guid id) {
             return await Repository.Get(id);
         }
-        [HttpGet("all")]
+        [HttpGet]
         public async Task<Player[]> GetAll() {
             return await Repository.GetAll();
         }
-        [HttpPost("new")]
+        [HttpPost]
         public async Task<Player> Create(NewPlayer newPlayer) {
             return await Repository.Create(newPlayer);
         }
-        [HttpPost]
+        [HttpPost("{id:guid}")]
         public async Task<Player> Modify(Guid id, ModifiedPlayer player) {
             return await Repository.Modify(id, player);
         }
-        [HttpDelete]
+        [HttpDelete("{id:guid}")]
         public async Task<Player> Delete(Guid id) {
             return await Repository.Delete(id);
         }
