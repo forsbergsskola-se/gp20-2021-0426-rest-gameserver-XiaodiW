@@ -17,7 +17,7 @@ namespace MMORPG.Controllers {
             Repository = repo;
         }
 
-        [HttpGet("{playerId:guid}/{itemId:guid}")] 
+        [HttpGet("{playerId:guid}/items/{itemId:guid}")] 
         public async Task<Item> GetItem(Guid playerId, Guid itemId) {
             return await Repository.GetItem(playerId,itemId);
         }
@@ -29,7 +29,7 @@ namespace MMORPG.Controllers {
         public async Task<Item> CreateItem(Guid playerId, NewItem item) {
             return await Repository.AddItem(playerId,item);
         }
-        [HttpDelete("{playerId:guid}/items")]
+        [HttpDelete("{playerId:guid}/items/{itemId:guid}")]
         public async Task<Item> DeleteItem(Guid playerId, Guid itemId) {
             return await Repository.DeleteItem(playerId,itemId);
         }
