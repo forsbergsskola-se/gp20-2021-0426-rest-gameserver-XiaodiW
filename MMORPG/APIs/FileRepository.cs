@@ -17,6 +17,10 @@ namespace MMORPG.APIs {
                 using var sr = new StreamReader(_path);
                 var data = await sr.ReadToEndAsync();
                 var result = JsonSerializer.Deserialize<List<Player>>(data);
+                if(result == null) return new List<Player>();
+                foreach(var player in result)
+                foreach(var playerItem in player.Items)
+                    playerItem.Player = player;
                 sr.Close();
                 return result;
             }
@@ -131,7 +135,7 @@ namespace MMORPG.APIs {
                 var data = await ReadFile();
                 var player = data.FirstOrDefault(a => a.Id == playerId);
                 if(player == null) throw new NullReferenceException("The player ID is not exist.");
-                result = new Item(item.Name);
+                result = new Item(player,item.Name);
                 player.Items.Add(result);
                 await using var createStream = File.Create(_path);
                 await JsonSerializer.SerializeAsync(createStream, data);
