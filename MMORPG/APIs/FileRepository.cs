@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MMORPG.Types;
-using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using System.Text.Json;
 
 namespace MMORPG.APIs {
 
@@ -18,7 +16,7 @@ namespace MMORPG.APIs {
             try {
                 using var sr = new StreamReader(_path);
                 var data = await sr.ReadToEndAsync();
-                var result = JsonConvert.DeserializeObject<List<Player>>(data);
+                var result = JsonSerializer.Deserialize<List<Player>>(data);
                 sr.Close();
                 return result;
             }
@@ -133,15 +131,10 @@ namespace MMORPG.APIs {
                 var data = await ReadFile();
                 var player = data.FirstOrDefault(a => a.Id == playerId);
                 if(player == null) throw new NullReferenceException("The player ID is not exist.");
-                result = new Item(player, item.Name);
+                result = new Item(item.Name);
                 player.Items.Add(result);
                 await using var createStream = File.Create(_path);
-                var str = JsonConvert.SerializeObject(data, Formatting.None, new JsonSerializerSettings {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                });
-                var sendData = Encoding.UTF8.GetBytes(str);
-                // await JsonSerializer.SerializeAsync(createStream, data);
-                await createStream.WriteAsync(sendData);
+                await JsonSerializer.SerializeAsync(createStream, data);
                 createStream.Close();
             }
             catch(IOException e) {
