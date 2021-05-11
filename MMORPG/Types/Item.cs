@@ -1,5 +1,9 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using MMORPG.Validation;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace MMORPG.Types {
@@ -7,13 +11,19 @@ namespace MMORPG.Types {
     [BsonIgnoreExtraElements]
     [BsonNoId]
     public class Item {
-        
+        private static readonly int Max = (int)Enum.GetValues(typeof(ItemType)).Cast<ItemType>().Max();
+
         public Guid Id { get; set; }
         public string Name { get; set; }
-
+        
+        [EnumDataType(typeof(ItemType))]  
         public ItemType Type{ get; set; }
+        
+        [Range(0,99)]
         public int Level { get; set; }
         public bool IsDeleted { get; set; }
+        
+        [DateValidation]
         public DateTime CreationTime { get; set; }
 
         [JsonIgnore]

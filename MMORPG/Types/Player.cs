@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MMORPG.Validation;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace MMORPG.Types {
@@ -13,6 +14,8 @@ namespace MMORPG.Types {
         public int Score { get; set; }
         public int Level { get; set; }
         public bool IsDeleted { get; set; }
+        
+        [DateValidation]
         public DateTime CreationTime { get; set; }
         public List<Item> Items { get; set; }
         
