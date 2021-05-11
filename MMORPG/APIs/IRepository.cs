@@ -12,6 +12,9 @@ namespace MMORPG.APIs {
         Task<Player> Modify(Guid id, ModifiedPlayer modifiedPlayer);
         Task<Player> Delete(Guid id);
 
+        Task<Player[]> GetScoreGt(int minScore);
+        
+
         Task<Item> GetItem(Guid playerId, Guid itemId);
         Task<Item[]> GetAllItems(Guid playerId);
         Task<Item> AddItem(Guid playerId, NewItem item);

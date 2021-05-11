@@ -21,7 +21,7 @@ namespace MMORPG.Controllers {
         public async Task<Player> Get(Guid id) {
             return await Repository.Get(id); 
         }
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<Player[]> GetAll() {
             return await Repository.GetAll();
         }
@@ -36,6 +36,11 @@ namespace MMORPG.Controllers {
         [HttpDelete("{id:guid}")]
         public async Task<Player> Delete(Guid id) {
             return await Repository.Delete(id);
+        }
+        
+        [HttpGet]
+        public async Task<Player[]> GetScoreGt(int minScore) {
+            return await Repository.GetScoreGt(minScore);
         }
     }
 

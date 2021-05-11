@@ -62,6 +62,17 @@ namespace MMORPG.APIs {
             return result;
         }
 
+        public async  Task<Player[]> GetScoreGt(int minScore) {
+            Player[] result;
+            var filter = Builders<Player>.Filter.Gt(p=>p.Score,minScore);
+            try {
+                var data = await Collection.Find(filter).ToListAsync();
+                result = data.ToArray();
+            }
+            catch (InvalidOperationException) { throw new NotFoundException("Required Player Not Found!"); }
+            return result;
+        }
+
         public async Task<Item> GetItem(Guid playerId, Guid itemId) {
             Item result;
             Player player;
