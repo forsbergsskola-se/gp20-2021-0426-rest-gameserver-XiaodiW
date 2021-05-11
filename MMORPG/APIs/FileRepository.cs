@@ -66,6 +66,11 @@ namespace MMORPG.APIs {
                 if(allPlayers[i].Id == id)
                     index = i;
             if(index == -1) throw new NotFoundException("Player ID Not Found!");
+            foreach(var field in modifiedPlayer.GetType().GetProperties()) {
+                var fieldValue = (int)modifiedPlayer.GetType().GetProperty(field.Name).GetValue(modifiedPlayer);
+                if(fieldValue < 0 ) continue;
+                allPlayers[index].GetType().GetProperty(field.Name).SetValue(allPlayers[index],fieldValue);
+            }
             allPlayers[index].Score = modifiedPlayer.Score;
             result = allPlayers[index];
             await using var createStream = File.Create(_path);
