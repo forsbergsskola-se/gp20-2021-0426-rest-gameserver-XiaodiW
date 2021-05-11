@@ -51,11 +51,15 @@ namespace MMORPG
             app.UseRouting();
 
             app.UseAuthorization();
+            
+            // global error handler
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+            
         }
     }
 }
