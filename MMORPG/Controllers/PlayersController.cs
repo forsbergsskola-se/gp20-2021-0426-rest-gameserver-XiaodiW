@@ -2,12 +2,13 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MMORPG.APIs;
+using MMORPG.Filters;
 using MMORPG.Types;
 
 namespace MMORPG.Controllers {
+
     [ApiController]
     [Route("api/players")]
-
     public class PlayersController: ControllerBase {
         
         private readonly IRepository Repository;

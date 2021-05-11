@@ -1,13 +1,14 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using MMORPG.Filters;
 using MMORPG.Help;
 using MMORPG.Types;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace MMORPG.APIs {
-    
+    [ValidateExceptionFilter]
     public class MongoDbRepository : IRepository {
         static readonly MongoClient Client = new MongoClient("mongodb://localhost:27017");
         static readonly IMongoDatabase Database = Client.GetDatabase("game");
@@ -38,8 +39,12 @@ namespace MMORPG.APIs {
             Player result;
             try {
                 var filter = Builders<Player>.Filter.Eq("Id", id);
-                var update = Builders<Player>.Update.Set("Score", modifiedPlayer.Score);
-                await Collection.UpdateOneAsync(filter, update);
+                foreach(var field in modifiedPlayer.GetType().GetProperties()) {
+                    var fieldValue = (int)modifiedPlayer.GetType().GetProperty(field.Name).GetValue(modifiedPlayer);
+                    if(fieldValue < 0 ) continue;
+                    var update = Builders<Player>.Update.Set(field.Name, fieldValue);
+                    await Collection.UpdateOneAsync(filter, update);
+                }
                 result = await Collection.Find(filter).FirstAsync();
             }
             catch(InvalidOperationException) { throw new NotFoundException("Player ID Not Found!"); }
@@ -85,8 +90,10 @@ namespace MMORPG.APIs {
         public async Task<Item> AddItem(Guid playerId, NewItem item) {
             var builder = Builders<Player>.Filter;
             var filter = builder.Eq(x => x.Id, playerId);
-            try { await Collection.Find(filter).FirstAsync(); }
+            Player player;
+            try { player = await Collection.Find(filter).FirstAsync(); }
             catch(Exception e) { throw new NotFoundException("Player ID Not Found!"); }
+            if(item.Type == ItemType.Sword && player.Level < 3) throw new NewItemValidationException();
             var result = new Item(item.Name,item.Type);
             var update = Builders<Player>.Update.AddToSet(x => x.Items, result);
             await Collection.UpdateOneAsync(filter, update);

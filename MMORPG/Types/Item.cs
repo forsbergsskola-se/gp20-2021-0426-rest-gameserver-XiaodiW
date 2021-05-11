@@ -11,8 +11,6 @@ namespace MMORPG.Types {
     [BsonIgnoreExtraElements]
     [BsonNoId]
     public class Item {
-        private static readonly int Max = (int)Enum.GetValues(typeof(ItemType)).Cast<ItemType>().Max();
-
         public Guid Id { get; set; }
         public string Name { get; set; }
         

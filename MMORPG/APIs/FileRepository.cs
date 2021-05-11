@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using MMORPG.Types;
 using System.Text.Json;
+using System.Threading.Tasks;
+using MMORPG.Filters;
 using MMORPG.Help;
+using MMORPG.Types;
 
 namespace MMORPG.APIs {
 
+    [ValidateExceptionFilter]
     public class FileRepository : IRepository {
         private static readonly string fileName = "player.json";
         private readonly string _path = Path.Combine(Environment.CurrentDirectory, @"OfflineData", fileName);
@@ -87,11 +89,11 @@ namespace MMORPG.APIs {
         public async Task<Item> GetItem(Guid playerId, Guid itemId) {
             Item result = null;
             var data = await ReadFile();
-                var player = data.FirstOrDefault(a => a.Id == playerId);
-                if(player == null) throw new NotFoundException("Player ID Not Found!");
-                result = player.Items.Find(a => a.Id == itemId);
-                if(result == null) throw new NotFoundException("Item ID Not Found!");
-                return result;
+            var player = data.FirstOrDefault(a => a.Id == playerId);
+            if(player == null) throw new NotFoundException("Player ID Not Found!");
+            result = player.Items.Find(a => a.Id == itemId);
+            if(result == null) throw new NotFoundException("Item ID Not Found!");
+            return result;
         }
 
         public async Task<Item[]> GetAllItems(Guid playerId) {
@@ -108,7 +110,8 @@ namespace MMORPG.APIs {
             var data = await ReadFile();
             var player = data.FirstOrDefault(a => a.Id == playerId);
             if(player == null) throw new NotFoundException("Player ID Not Found!");
-            result = new Item(item.Name,item.Type);
+            if(item.Type == ItemType.Sword && player.Level < 3) throw new NewItemValidationException();
+            result = new Item(item.Name, item.Type);
             player.Items.Add(result);
             await using var createStream = File.Create(_path);
             await JsonSerializer.SerializeAsync(createStream, data);
@@ -118,14 +121,14 @@ namespace MMORPG.APIs {
 
         public async Task<Item> DeleteItem(Guid playerId, Guid itemId) {
             Item result = null;
-                var data = await ReadFile();
-                var player = data.FirstOrDefault(a => a.Id == playerId);
-                if(player == null) throw new NotFoundException("Player ID Not Found!");
-                result = player.Items.Find(a => a.Id == itemId);
-                if(result == null) throw new NotFoundException("Item ID Not Found!");
-                player.Items.Remove(result);
-                await using var createStream = File.Create(_path);
-                await JsonSerializer.SerializeAsync(createStream, data);
+            var data = await ReadFile();
+            var player = data.FirstOrDefault(a => a.Id == playerId);
+            if(player == null) throw new NotFoundException("Player ID Not Found!");
+            result = player.Items.Find(a => a.Id == itemId);
+            if(result == null) throw new NotFoundException("Item ID Not Found!");
+            player.Items.Remove(result);
+            await using var createStream = File.Create(_path);
+            await JsonSerializer.SerializeAsync(createStream, data);
             return result;
         }
     }
