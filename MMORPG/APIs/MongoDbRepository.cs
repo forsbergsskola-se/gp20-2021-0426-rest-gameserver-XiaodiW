@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using MMORPG.Help;
 using MMORPG.Types;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -86,7 +87,7 @@ namespace MMORPG.APIs {
             var filter = builder.Eq(x => x.Id, playerId);
             try { await Collection.Find(filter).FirstAsync(); }
             catch(Exception e) { throw new NotFoundException("Player ID Not Found!"); }
-            var result = new Item(new Player(""), item.Name);
+            var result = new Item(item.Name,item.Type);
             var update = Builders<Player>.Update.AddToSet(x => x.Items, result);
             await Collection.UpdateOneAsync(filter, update);
             return result;

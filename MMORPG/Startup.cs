@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using MMORPG.APIs;
+using MMORPG.MiddleWare;
 
 namespace MMORPG
 {

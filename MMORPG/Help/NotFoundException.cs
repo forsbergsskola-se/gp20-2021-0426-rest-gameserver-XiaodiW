@@ -1,6 +1,6 @@
 using System;
 
-namespace MMORPG {
+namespace MMORPG.Help {
     [Serializable]
     public class NotFoundException: Exception {
         public NotFoundException()

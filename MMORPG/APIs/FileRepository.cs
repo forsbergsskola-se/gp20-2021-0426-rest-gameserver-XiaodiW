@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MMORPG.Types;
 using System.Text.Json;
+using MMORPG.Help;
 
 namespace MMORPG.APIs {
 
@@ -107,7 +108,7 @@ namespace MMORPG.APIs {
             var data = await ReadFile();
             var player = data.FirstOrDefault(a => a.Id == playerId);
             if(player == null) throw new NotFoundException("Player ID Not Found!");
-            result = new Item(player, item.Name);
+            result = new Item(item.Name,item.Type);
             player.Items.Add(result);
             await using var createStream = File.Create(_path);
             await JsonSerializer.SerializeAsync(createStream, data);
