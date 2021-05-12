@@ -98,6 +98,13 @@ namespace MMORPG.APIs {
             return result;
         }
 
+        public async Task<Player[]> GetPlayerByName(string name) {
+            var data = await ReadFile();
+            var result = data.Where(a=>a.Name == name).ToArray();
+            if(result == null) throw new NotFoundException("Required Player Not Found!");
+            return result;
+        }
+
         public async Task<Item> GetItem(Guid playerId, Guid itemId) {
             Item result = null;
             var data = await ReadFile();

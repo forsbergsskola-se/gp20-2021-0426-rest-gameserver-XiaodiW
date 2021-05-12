@@ -13,6 +13,7 @@ namespace MMORPG.APIs {
         Task<Player> Delete(Guid id);
 
         Task<Player[]> GetScoreGt(int minScore);
+        Task<Player[]> GetPlayerByName(string name);
         
 
         Task<Item> GetItem(Guid playerId, Guid itemId);

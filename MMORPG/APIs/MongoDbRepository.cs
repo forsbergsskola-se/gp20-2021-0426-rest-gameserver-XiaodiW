@@ -73,6 +73,17 @@ namespace MMORPG.APIs {
             return result;
         }
 
+        public async Task<Player[]> GetPlayerByName(string name) {
+            Player[] result;
+            var filter = Builders<Player>.Filter.Eq(p=>p.Name,name);
+            try {
+                var data = await Collection.Find(filter).ToListAsync();
+                result = data.ToArray();
+            }
+            catch (InvalidOperationException) { throw new NotFoundException("Required Player Not Found!"); }
+            return result;
+        }
+
         public async Task<Item> GetItem(Guid playerId, Guid itemId) {
             Item result;
             Player player;

@@ -21,7 +21,7 @@ namespace MMORPG.Controllers {
         public async Task<Player> Get(Guid id) {
             return await Repository.Get(id); 
         }
-        [HttpGet("all")]
+        [HttpGet]
         public async Task<Player[]> GetAll() {
             return await Repository.GetAll();
         }
@@ -39,9 +39,19 @@ namespace MMORPG.Controllers {
         }
         
         [HttpGet]
-        public async Task<Player[]> GetScoreGt(int minScore) {
+        [ActionName(nameof(GetScoreGt))]
+        [ExactQueryParam("minScore")]
+        public async Task<Player[]> GetScoreGt([FromQuery]int minScore) {
             return await Repository.GetScoreGt(minScore);
         }
+        
+        [HttpGet]
+        [ActionName(nameof(GetScoreGt))]
+        [ExactQueryParam("playerName")]
+        public async Task<Player[]> GetPlayerByName([FromQuery]string playerName) {
+            return await Repository.GetPlayerByName(playerName);
+        }
+        
     }
 
 }
