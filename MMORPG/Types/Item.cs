@@ -1,8 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using MMORPG.Validation;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -13,20 +11,16 @@ namespace MMORPG.Types {
     public class Item {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        
-        [EnumDataType(typeof(ItemType))]  
-        public ItemType Type{ get; set; }
-        
-        [Range(0,99)]
-        public int Level { get; set; }
-        public bool IsDeleted { get; set; }
-        
-        [DateValidation]
-        public DateTime CreationTime { get; set; }
 
-        [JsonIgnore]
-        [BsonIgnore] 
-        public Player Player { get; set; }
+        [EnumDataType(typeof(ItemType))] public ItemType Type { get; set; }
+
+        [Range(0, 99)] public int Level { get; set; }
+        public bool IsDeleted { get; set; }
+
+        [DateValidation] public DateTime CreationTime { get; set; }
+
+        [JsonIgnore] [BsonIgnore] public Player Player { get; set; }
+
         public Item(string name, ItemType type) {
             Id = Guid.NewGuid();
             Name = name;
@@ -34,6 +28,12 @@ namespace MMORPG.Types {
             Level = 0;
             IsDeleted = false;
             CreationTime = DateTime.Now;
+        }
+
+        public Item() : this(string.Empty, ItemType.Potion) {
+            Id = Guid.Empty;
+            CreationTime = DateTime.UnixEpoch;
+
         }
     }
 

@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using MMORPG.Filters;
 using MMORPG.Help;
 using MMORPG.Types;
@@ -24,9 +28,27 @@ namespace MMORPG.APIs {
             return result;
         }
 
+        private static List<T> RestrictedData<T>(List<T> dataArray,string[] properties) where T : new(){
+            var result = new List<T>();
+            var allFields = dataArray[^1].GetType().GetProperties();
+            foreach(var data in dataArray) {
+                var subResult = new T();
+                foreach(var field in allFields) {
+                    var value = data.GetType().GetProperty(field.Name)?.GetValue(data);
+                    if(properties.Contains(field.Name)) subResult?.GetType().GetProperty(field.Name)?.SetValue(subResult,value,null);;
+                }
+                result.Add(subResult);
+            }
+            return result;
+        }
+
         public async Task<Player[]> GetAll() {
-            var result = await Collection.Find(new BsonDocument()).ToListAsync();
-            return result.ToArray();
+            var filter = Builders<Player>.Filter.Eq(p=>p.IsDeleted,false);
+            var response = await Collection.Find(filter).ToListAsync();
+            var restriction = new [] {"Name"};
+            var restrictedResult= RestrictedData<Player>(response,restriction);
+            var result = restrictedResult.ToArray();
+            return result;
         }
 
         public async Task<Player> Create(NewPlayer newPlayer) {
@@ -77,6 +99,7 @@ namespace MMORPG.APIs {
         public async  Task<Player[]> GetScoreGt(int minScore) {
             Player[] result;
             var filter = Builders<Player>.Filter.Gt(p=>p.Score,minScore);
+            filter &= Builders<Player>.Filter.Eq(p=>p.IsDeleted,false);
             try {
                 var data = await Collection.Find(filter).ToListAsync();
                 result = data.ToArray();
@@ -88,6 +111,7 @@ namespace MMORPG.APIs {
         public async Task<Player[]> GetPlayerByName(string name) {
             Player[] result;
             var filter = Builders<Player>.Filter.Eq(p=>p.Name,name);
+            filter &= Builders<Player>.Filter.Eq(p=>p.IsDeleted,false);
             try {
                 var data = await Collection.Find(filter).ToListAsync();
                 result = data.ToArray();

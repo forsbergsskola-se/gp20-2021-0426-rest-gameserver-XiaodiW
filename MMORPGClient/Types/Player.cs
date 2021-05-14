@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using GitHubExplorer.Comm;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MMORPGClient.APIs {
 
@@ -20,20 +22,29 @@ namespace MMORPGClient.APIs {
             var url = new Uri($"{GlobalSetting.UrlRoot}/players");
             var restPost = new RestApiPost(url,new NewPlayer(){Name = name});
             var responseData = await restPost.Post();
-            var options = new JsonSerializerOptions {
-                PropertyNameCaseInsensitive = true
-            };
-            var newPlayer = JsonSerializer.Deserialize<Player>(responseData,options);
+            var newPlayer = JsonConvert.DeserializeObject<Player>(responseData);
             return newPlayer;
         }
         public static async Task<Player> DeletePlayer(Guid id) {
             var url = new Uri($"{GlobalSetting.UrlRoot}/players/{id}/delete");
             var restPost = new RestApiPost(url,null);
             var responseData = await restPost.Post();
-            var options = new JsonSerializerOptions {
-                PropertyNameCaseInsensitive = true
-            };
-            var newPlayer = JsonSerializer.Deserialize<Player>(responseData,options);
+            var newPlayer = JsonConvert.DeserializeObject<Player>(responseData);
+            return newPlayer;
+        }
+        public static async Task<Player[]> ListAllPlayers() {
+            var url = new Uri($"{GlobalSetting.UrlRoot}/players");
+            var restGet = new RestApiGet(url);
+            var responseData = await restGet.Get();
+            var newPlayer = JsonConvert.DeserializeObject<List<Player>>(responseData)?.ToArray();
+            return newPlayer;
+        }
+        
+        public static async Task<Player[]> GetPlayerByName(string name) {
+            var url = new Uri($"{GlobalSetting.UrlRoot}/players?playerName={name}");
+            var restGet = new RestApiGet(url);
+            var responseData = await restGet.Get();
+            var newPlayer = JsonConvert.DeserializeObject<List<Player>>(responseData)?.ToArray();
             return newPlayer;
         }
     }

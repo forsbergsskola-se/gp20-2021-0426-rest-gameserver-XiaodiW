@@ -13,6 +13,7 @@ namespace MMORPG.Types {
         public string Name { get; set; }
         public int Score { get; set; }
         public int Level { get; set; }
+        public int Gold { get; set; }
         public bool IsDeleted { get; set; }
         
         [DateValidation]
@@ -26,9 +27,15 @@ namespace MMORPG.Types {
             Name = name;
             Score = 0;
             Level = 0;
+            Gold = 0;
             IsDeleted = false;
             CreationTime = DateTime.Now;
             Items = new List<Item>();
+        }
+
+        public Player() : this(string.Empty) {
+            Id = Guid.Empty;
+            CreationTime = DateTime.UnixEpoch;
         }
     }
 
