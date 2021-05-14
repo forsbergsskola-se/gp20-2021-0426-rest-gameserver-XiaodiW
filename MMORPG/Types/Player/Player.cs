@@ -12,6 +12,7 @@ namespace MMORPG.Types {
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int Score { get; set; }
+        public int Experience { get; set; }
         public int Level { get; set; }
         public int Gold { get; set; }
         public bool IsDeleted { get; set; }

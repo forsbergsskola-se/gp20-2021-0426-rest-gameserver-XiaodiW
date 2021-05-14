@@ -31,7 +31,7 @@ namespace GitHubExplorer.Comm {
             var stream = await httpResponse.Content.ReadAsStreamAsync();
             var reader = new StreamReader(stream);
             string data = await reader.ReadToEndAsync();
-            Console.WriteLine(data);
+            // Console.WriteLine(data);
             client.Dispose();
             return data;
         }

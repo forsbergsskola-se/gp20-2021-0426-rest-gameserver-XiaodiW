@@ -13,6 +13,7 @@ namespace MMORPGClient.APIs {
         public string Name { get; set; }
         public int Score { get; set; }
         public int Level { get; set; }
+        public int Gold { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime CreationTime { get; set; }
         public List<Item> Items { get; set; }

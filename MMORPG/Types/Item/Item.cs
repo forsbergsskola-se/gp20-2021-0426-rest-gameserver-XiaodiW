@@ -33,8 +33,9 @@ namespace MMORPG.Types {
         public Item() : this(string.Empty, ItemType.Potion) {
             Id = Guid.Empty;
             CreationTime = DateTime.UnixEpoch;
-
         }
+
+        public Item(bool ramdom) : this(string.Empty, ItemType.Potion) {}
     }
 
 }
