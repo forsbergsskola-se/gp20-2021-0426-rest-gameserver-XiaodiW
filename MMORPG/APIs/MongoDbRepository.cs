@@ -1,22 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using MMORPG.Filters;
 using MMORPG.Help;
 using MMORPG.Types;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace MMORPG.APIs {
+
     [ValidateExceptionFilter]
     public class MongoDbRepository : IRepository {
-        static readonly MongoClient Client = new MongoClient("mongodb://localhost:27017");
-        static readonly IMongoDatabase Database = Client.GetDatabase("game");
-        static readonly IMongoCollection<Player> Collection = Database.GetCollection<Player>("players");
+        private static readonly MongoClient Client = new("mongodb://localhost:27017");
+        private static readonly IMongoDatabase Database = Client.GetDatabase("game");
+        private static readonly IMongoCollection<Player> Collection = Database.GetCollection<Player>("players");
 
         public async Task<Player> Get(Guid id) {
             Player result;
@@ -28,26 +23,18 @@ namespace MMORPG.APIs {
             return result;
         }
 
-        private static List<T> RestrictedData<T>(List<T> dataArray,string[] properties) where T : new(){
-            var result = new List<T>();
-            var allFields = dataArray[^1].GetType().GetProperties();
-            foreach(var data in dataArray) {
-                var subResult = new T();
-                foreach(var field in allFields) {
-                    var value = data.GetType().GetProperty(field.Name)?.GetValue(data);
-                    if(properties.Contains(field.Name)) subResult?.GetType().GetProperty(field.Name)?.SetValue(subResult,value,null);;
-                }
-                result.Add(subResult);
-            }
+        public async Task<Player[]> GetAll() {
+            var filter = Builders<Player>.Filter.Eq(p => p.IsDeleted, false);
+            var response = await Collection.Find(filter).ToListAsync();
+            var restriction = new[] {"Name"};
+            var restrictedResult = ComApi.RestrictedData(response, restriction);
+            var result = restrictedResult.ToArray();
             return result;
         }
-
-        public async Task<Player[]> GetAll() {
-            var filter = Builders<Player>.Filter.Eq(p=>p.IsDeleted,false);
+        public async Task<Player[]> AdminGetAll() {
+            var filter = Builders<Player>.Filter.Eq(p => p.IsDeleted, false);
             var response = await Collection.Find(filter).ToListAsync();
-            var restriction = new [] {"Name"};
-            var restrictedResult= RestrictedData<Player>(response,restriction);
-            var result = restrictedResult.ToArray();
+            var result = response.ToArray();
             return result;
         }
 
@@ -62,8 +49,8 @@ namespace MMORPG.APIs {
             try {
                 var filter = Builders<Player>.Filter.Eq("Id", id);
                 foreach(var field in modifiedPlayer.GetType().GetProperties()) {
-                    var fieldValue = (int)modifiedPlayer.GetType().GetProperty(field.Name).GetValue(modifiedPlayer);
-                    if(fieldValue < 0 ) continue;
+                    var fieldValue = (int) modifiedPlayer.GetType().GetProperty(field.Name).GetValue(modifiedPlayer);
+                    if(fieldValue < 0) continue;
                     var update = Builders<Player>.Update.Set(field.Name, fieldValue);
                     await Collection.UpdateOneAsync(filter, update);
                 }
@@ -96,27 +83,27 @@ namespace MMORPG.APIs {
             return result;
         }
 
-        public async  Task<Player[]> GetScoreGt(int minScore) {
+        public async Task<Player[]> GetScoreGt(int minScore) {
             Player[] result;
-            var filter = Builders<Player>.Filter.Gt(p=>p.Score,minScore);
-            filter &= Builders<Player>.Filter.Eq(p=>p.IsDeleted,false);
+            var filter = Builders<Player>.Filter.Gt(p => p.Score, minScore);
+            filter &= Builders<Player>.Filter.Eq(p => p.IsDeleted, false);
             try {
                 var data = await Collection.Find(filter).ToListAsync();
                 result = data.ToArray();
             }
-            catch (InvalidOperationException) { throw new NotFoundException("Required Player Not Found!"); }
+            catch(InvalidOperationException) { throw new NotFoundException("Required Player Not Found!"); }
             return result;
         }
 
         public async Task<Player[]> GetPlayerByName(string name) {
             Player[] result;
-            var filter = Builders<Player>.Filter.Eq(p=>p.Name,name);
-            filter &= Builders<Player>.Filter.Eq(p=>p.IsDeleted,false);
+            var filter = Builders<Player>.Filter.Eq(p => p.Name, name);
+            filter &= Builders<Player>.Filter.Eq(p => p.IsDeleted, false);
             try {
                 var data = await Collection.Find(filter).ToListAsync();
-                result = data.ToArray();
+                result = ComApi.RestrictedData(data,new []{"Name","Score","Level","Gold","items"}).ToArray();
             }
-            catch (InvalidOperationException) { throw new NotFoundException("Required Player Not Found!"); }
+            catch(InvalidOperationException) { throw new NotFoundException("Required Player Not Found!"); }
             return result;
         }
 
@@ -152,7 +139,7 @@ namespace MMORPG.APIs {
             try { player = await Collection.Find(filter).FirstAsync(); }
             catch(Exception e) { throw new NotFoundException("Player ID Not Found!"); }
             if(item.Type == ItemType.Sword && player.Level < 3) throw new NewItemValidationException();
-            var result = new Item(item.Name,item.Type);
+            var result = new Item(item.Name, item.Type);
             var update = Builders<Player>.Update.AddToSet(x => x.Items, result);
             await Collection.UpdateOneAsync(filter, update);
             return result;
@@ -166,7 +153,7 @@ namespace MMORPG.APIs {
             catch(InvalidOperationException e) { throw new NotFoundException("Player ID Not Found!"); }
             var result = player.Items.Find(item => item.Id == itemId);
             if(result == null) throw new NotFoundException("Item ID Not Found!");
-            var update = Builders<Player>.Update.PullFilter("Items", Builders<Item>.Filter.Eq(x=> x.Id, itemId));
+            var update = Builders<Player>.Update.PullFilter("Items", Builders<Item>.Filter.Eq(x => x.Id, itemId));
             await Collection.UpdateOneAsync(filter, update);
             return result;
         }

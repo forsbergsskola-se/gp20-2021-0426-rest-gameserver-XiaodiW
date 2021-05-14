@@ -8,6 +8,7 @@ namespace MMORPG.APIs {
     {
         Task<Player> Get(Guid id);
         Task<Player[]> GetAll();
+        Task<Player[]> AdminGetAll();
         Task<Player> Create(NewPlayer newPlayer);
         Task<Player> Modify(Guid id, ModifiedPlayer modifiedPlayer);
         Task<Player> MarkDelete(Guid id);

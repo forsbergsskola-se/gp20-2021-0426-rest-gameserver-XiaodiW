@@ -47,6 +47,10 @@ namespace MMORPG.APIs {
             return result.ToArray();
         }
 
+        public Task<Player[]> AdminGetAll() {
+            throw new NotImplementedException();
+        }
+
         public async Task<Player> Create(NewPlayer newPlayer) {
             var players = await ReadFile();
             if(players == null) players = new List<Player>();
