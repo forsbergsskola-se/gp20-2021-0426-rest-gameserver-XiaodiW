@@ -1,4 +1,4 @@
-namespace MMORPG.Types {
+namespace MMORPG.Types.Player {
 
     public class ModifiedPlayer
     {

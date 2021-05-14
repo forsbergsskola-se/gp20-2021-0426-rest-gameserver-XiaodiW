@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MMORPG.APIs;
 using MMORPG.Filters;
 using MMORPG.Types;
+using MMORPG.Types.Player;
 
 namespace MMORPG.Controllers {
 
@@ -43,6 +44,11 @@ namespace MMORPG.Controllers {
             return await Repository.Delete(id);
         }
         
+        [HttpPost("{id:guid}/getquest")]
+        public async Task<Player> GetQuests(Guid id) {
+            return await Repository.GetQuests(id);
+        }
+        
         [HttpGet]
         [ActionName(nameof(GetScoreGt))]
         [ExactQueryParam("minScore")]
@@ -51,7 +57,7 @@ namespace MMORPG.Controllers {
         }
         
         [HttpGet]
-        [ActionName(nameof(GetScoreGt))]
+        [ActionName(nameof(GetPlayerByName))]
         [ExactQueryParam("playerName")]
         public async Task<Player[]> GetPlayerByName([FromQuery]string playerName) {
             return await Repository.GetPlayerByName(playerName);

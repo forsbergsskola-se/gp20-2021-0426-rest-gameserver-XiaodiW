@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using MMORPG.Filters;
 using MMORPG.Help;
 using MMORPG.Types;
+using MMORPG.Types.Item;
+using MMORPG.Types.Player;
+using MMORPG.Types.Quest;
 using MongoDB.Driver;
 
 namespace MMORPG.APIs {
@@ -104,6 +107,20 @@ namespace MMORPG.APIs {
                 result = ComApi.RestrictedData(data,new []{"Name","Score","Level","Gold","items"}).ToArray();
             }
             catch(InvalidOperationException) { throw new NotFoundException("Required Player Not Found!"); }
+            return result;
+        }
+
+        public async Task<Player> GetQuests(Guid id) {
+            Player result;
+            try {
+                var filter = Builders<Player>.Filter.Eq("Id", id);
+                filter &= Builders<Player>.Filter.Eq(p => p.IsDeleted, false);
+                result = await Collection.Find(filter).FirstAsync();
+                var responsePlayer = Quest.GetQuests(result);
+                await Collection.ReplaceOneAsync(filter, responsePlayer);
+                result = await Collection.Find(filter).FirstAsync();
+            }
+            catch(InvalidOperationException) { throw new NotFoundException("Player ID Not Found!"); }
             return result;
         }
 

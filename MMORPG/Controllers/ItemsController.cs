@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MMORPG.APIs;
 using MMORPG.Filters;
 using MMORPG.Types;
+using MMORPG.Types.Item;
 
 namespace MMORPG.Controllers {
 

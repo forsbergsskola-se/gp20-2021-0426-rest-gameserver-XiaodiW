@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using MMORPG.Filters;
 using MMORPG.Help;
 using MMORPG.Types;
+using MMORPG.Types.Item;
+using MMORPG.Types.Player;
 
 namespace MMORPG.APIs {
 
@@ -111,6 +113,10 @@ namespace MMORPG.APIs {
             var result = data.Where(a=>a.Name == name).ToArray();
             if(result == null) throw new NotFoundException("Required Player Not Found!");
             return result;
+        }
+
+        public Task<Player> GetQuests(Guid id) {
+            throw new NotImplementedException();
         }
 
         public async Task<Item> GetItem(Guid playerId, Guid itemId) {

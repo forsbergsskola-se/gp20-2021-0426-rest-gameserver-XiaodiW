@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using MMORPG.Validation;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace MMORPG.Types {
+namespace MMORPG.Types.Item {
 
     [BsonIgnoreExtraElements]
     [BsonNoId]
@@ -19,7 +19,7 @@ namespace MMORPG.Types {
 
         [DateValidation] public DateTime CreationTime { get; set; }
 
-        [JsonIgnore] [BsonIgnore] public Player Player { get; set; }
+        [JsonIgnore] [BsonIgnore] public Player.Player Player { get; set; }
 
         public Item(string name, ItemType type) {
             Id = Guid.NewGuid();

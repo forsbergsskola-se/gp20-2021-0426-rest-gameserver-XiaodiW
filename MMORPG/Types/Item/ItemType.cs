@@ -1,4 +1,4 @@
-namespace MMORPG.Types {
+namespace MMORPG.Types.Item {
 
     public enum ItemType {
         Sword = 0, 

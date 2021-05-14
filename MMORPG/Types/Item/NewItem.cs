@@ -1,4 +1,4 @@
-namespace MMORPG.Types {
+namespace MMORPG.Types.Item {
 
     public class NewItem {
         public string Name { get; set; }

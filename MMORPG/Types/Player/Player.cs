@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using MMORPG.Validation;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace MMORPG.Types {
+
+namespace MMORPG.Types.Player {
     [BsonIgnoreExtraElements]
     [BsonNoId]
     public class Player
@@ -19,9 +20,11 @@ namespace MMORPG.Types {
         
         [DateValidation]
         public DateTime CreationTime { get; set; }
-        public List<Item> Items { get; set; }
+        public List<Item.Item> Items { get; set; }
         
         public List<string> Tag { get; set; }
+        public List<Quest.Quest> Quests { get; set; }
+        public DateTime LastGetQuests { get; set; }
         
         public Player(string name) {
             Id = Guid.NewGuid();
@@ -31,7 +34,8 @@ namespace MMORPG.Types {
             Gold = 0;
             IsDeleted = false;
             CreationTime = DateTime.Now;
-            Items = new List<Item>();
+            Items = new List<Item.Item>();
+            Quests = new List<Quest.Quest>();
         }
 
         public Player() : this(string.Empty) {

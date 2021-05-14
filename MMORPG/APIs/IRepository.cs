@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using MMORPG.Types;
+using MMORPG.Types.Item;
+using MMORPG.Types.Player;
 
 namespace MMORPG.APIs {
 
@@ -17,6 +19,7 @@ namespace MMORPG.APIs {
         Task<Player[]> GetScoreGt(int minScore);
         Task<Player[]> GetPlayerByName(string name);
         
+        Task<Player> GetQuests(Guid id);
 
         Task<Item> GetItem(Guid playerId, Guid itemId);
         Task<Item[]> GetAllItems(Guid playerId);

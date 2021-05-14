@@ -18,6 +18,7 @@ namespace MMORPGClient.APIs {
         public DateTime CreationTime { get; set; }
         public List<Item> Items { get; set; }
         public List<string> Tag { get; set; }
+        public List<Quest> Quests { get; set; }
 
         public static async Task<Player> CreatePlayer(string name) {
             var url = new Uri($"{GlobalSetting.UrlRoot}/players");
@@ -46,6 +47,14 @@ namespace MMORPGClient.APIs {
             var restGet = new RestApiGet(url);
             var responseData = await restGet.Get();
             var newPlayer = JsonConvert.DeserializeObject<List<Player>>(responseData)?.ToArray();
+            return newPlayer;
+        }
+
+        public static async Task<Player> GetQuests(Guid id) {
+            var url = new Uri($"{GlobalSetting.UrlRoot}/players/{id}/getquest");
+            var restPost = new RestApiPost(url,null);
+            var responseData = await restPost.Post();
+            var newPlayer = JsonConvert.DeserializeObject<Player>(responseData);
             return newPlayer;
         }
     }
