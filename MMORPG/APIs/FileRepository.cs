@@ -78,6 +78,10 @@ namespace MMORPG.APIs {
             return result;
         }
 
+        public Task<Player> MarkDelete(Guid id) {
+            throw new NotImplementedException();
+        }
+
         public async Task<Player> Delete(Guid id) {
             Player result = null;
             var allPlayers = await ReadFile();

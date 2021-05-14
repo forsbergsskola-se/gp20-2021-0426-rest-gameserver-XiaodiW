@@ -33,6 +33,11 @@ namespace MMORPG.Controllers {
         public async Task<Player> Modify(Guid id, ModifiedPlayer player) {
             return await Repository.Modify(id, player);
         }
+        
+        [HttpPost("{id:guid}/delete")]
+        public async Task<Player> MarkDelete(Guid id) {
+            return await Repository.MarkDelete(id);
+        }
         [HttpDelete("{id:guid}")]
         public async Task<Player> Delete(Guid id) {
             return await Repository.Delete(id);

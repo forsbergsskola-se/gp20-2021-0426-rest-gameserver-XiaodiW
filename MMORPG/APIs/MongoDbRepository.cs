@@ -51,6 +51,18 @@ namespace MMORPG.APIs {
             return result;
         }
 
+        public async Task<Player> MarkDelete(Guid id) {
+            Player result;
+            try {
+                var filter = Builders<Player>.Filter.Eq("Id", id);
+                var update = Builders<Player>.Update.Set("IsDeleted", true);
+                await Collection.UpdateOneAsync(filter, update);
+                result = await Collection.Find(filter).FirstAsync();
+            }
+            catch(InvalidOperationException) { throw new NotFoundException("Player ID Not Found!"); }
+            return result;
+        }
+
         public async Task<Player> Delete(Guid id) {
             Player result;
             try {

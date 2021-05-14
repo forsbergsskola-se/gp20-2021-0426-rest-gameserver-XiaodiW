@@ -19,6 +19,8 @@ namespace MMORPG.Types {
         public DateTime CreationTime { get; set; }
         public List<Item> Items { get; set; }
         
+        public List<string> Tag { get; set; }
+        
         public Player(string name) {
             Id = Guid.NewGuid();
             Name = name;
