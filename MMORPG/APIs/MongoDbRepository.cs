@@ -111,17 +111,23 @@ namespace MMORPG.APIs {
         }
 
         public async Task<Player> GetQuests(Guid id) {
-            Player result;
+            Player player;
+            FilterDefinition<Player> filter;
             try {
-                var filter = Builders<Player>.Filter.Eq("Id", id);
+                filter = Builders<Player>.Filter.Eq("Id", id);
                 filter &= Builders<Player>.Filter.Eq(p => p.IsDeleted, false);
-                result = await Collection.Find(filter).FirstAsync();
-                var responsePlayer = Quest.GetQuests(result);
-                await Collection.ReplaceOneAsync(filter, responsePlayer);
-                result = await Collection.Find(filter).FirstAsync();
+                player = await Collection.Find(filter).FirstAsync();
+                var quests = Quest.GetQuests(player);
+                if(!player.Quests.Equals(quests)) {
+                    var update = Builders<Player>.Update
+                        .Set("Quests", quests)
+                        .Set("LastGetQuests", DateTime.Now);
+                    await Collection.UpdateOneAsync(filter, update);
+                }
             }
             catch(InvalidOperationException) { throw new NotFoundException("Player ID Not Found!"); }
-            return result;
+            player = await Collection.Find(filter).FirstAsync();
+            return player;
         }
 
         public async Task<Item> GetItem(Guid playerId, Guid itemId) {
