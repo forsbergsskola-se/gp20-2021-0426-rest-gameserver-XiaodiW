@@ -127,32 +127,40 @@ namespace MMORPG.APIs {
             throw new NotImplementedException();
         }
 
-        public async Task<Item> GetItem(Guid playerId, Guid itemId) {
+        public Task<Player> UpgradeLevel(Guid id, int gold) {
+            throw new NotImplementedException();
+        }
+
+        public Task<Player> UpgradeLevel(Guid id) {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Item> GetItem(Guid id, Guid itemId) {
             Item result = null;
             var data = await ReadFile();
-            var player = data.FirstOrDefault(a => a.Id == playerId);
+            var player = data.FirstOrDefault(a => a.Id == id);
             if(player == null) throw new NotFoundException("Player ID Not Found!");
             result = player.Items.Find(a => a.Id == itemId);
             if(result == null) throw new NotFoundException("Item ID Not Found!");
             return result;
         }
 
-        public async Task<Item[]> GetAllItems(Guid playerId) {
+        public async Task<Item[]> GetAllItems(Guid id) {
             Item[] result = null;
             var data = await ReadFile();
-            var player = data.FirstOrDefault(a => a.Id == playerId);
+            var player = data.FirstOrDefault(a => a.Id == id);
             if(player == null) throw new NotFoundException("Player ID Not Found!");
             result = player.Items.ToArray();
             return result;
         }
 
-        public async Task<Item> AddItem(Guid playerId, NewItem item) {
+        public async Task<Item> AddItem(Guid id, NewItem item) {
             Item result = null;
             var data = await ReadFile();
-            var player = data.FirstOrDefault(a => a.Id == playerId);
+            var player = data.FirstOrDefault(a => a.Id == id);
             if(player == null) throw new NotFoundException("Player ID Not Found!");
-            if(item.Type == ItemType.Sword && player.Level < 3) throw new NewItemValidationException();
-            result = new Item(item.Name, item.Type);
+            if(item.Type == 0 && player.Level < 3) throw new NewItemValidationException();
+            result = new Item();
             player.Items.Add(result);
             await using var createStream = File.Create(_path);
             await JsonSerializer.SerializeAsync(createStream, data);
@@ -160,10 +168,10 @@ namespace MMORPG.APIs {
             return result;
         }
 
-        public async Task<Item> DeleteItem(Guid playerId, Guid itemId) {
+        public async Task<Item> DeleteItem(Guid id, Guid itemId) {
             Item result = null;
             var data = await ReadFile();
-            var player = data.FirstOrDefault(a => a.Id == playerId);
+            var player = data.FirstOrDefault(a => a.Id == id);
             if(player == null) throw new NotFoundException("Player ID Not Found!");
             result = player.Items.Find(a => a.Id == itemId);
             if(result == null) throw new NotFoundException("Item ID Not Found!");
@@ -171,6 +179,14 @@ namespace MMORPG.APIs {
             await using var createStream = File.Create(_path);
             await JsonSerializer.SerializeAsync(createStream, data);
             return result;
+        }
+
+        public Task<Item> HandleItem(Guid id, Guid itemId, ItemActions action) {
+            throw new NotImplementedException();
+        }
+
+        public Task<Player[]> GetLeaderBoard(LeaderBoardOrderBy orderBy) {
+            throw new NotImplementedException();
         }
     }
 

@@ -26,6 +26,12 @@ namespace MMORPG.Controllers {
         public async Task<Item[]> GetAllItems(Guid playerId) {
             return await Repository.GetAllItems(playerId);
         }
+        
+        [HttpPost("{id:guid}/items/{itemId:guid}/{action}")] 
+        public async Task<Item> SoldItem(Guid id, Guid itemId, ItemActions action) {
+            return await Repository.HandleItem(id,itemId,action);
+        }
+        
         [HttpPost("{playerId:guid}/items")]
         public async Task<Item> CreateItem(Guid playerId, NewItem item) {
             return await Repository.AddItem(playerId,item);
@@ -34,6 +40,8 @@ namespace MMORPG.Controllers {
         public async Task<Item> DeleteItem(Guid playerId, Guid itemId) {
             return await Repository.DeleteItem(playerId,itemId);
         }
+        
+        
     }
 
 }

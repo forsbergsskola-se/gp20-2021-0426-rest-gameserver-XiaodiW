@@ -23,11 +23,17 @@ namespace MMORPG.APIs {
         Task<Player> GetQuests(Guid id);
         Task<Player> DoQuests(Guid id,Guid questId);
 
+        Task<Player> UpgradeLevel(Guid id,int gold);
+        Task<Player> UpgradeLevel(Guid id);
+        
+        Task<Item> GetItem(Guid id, Guid itemId);
+        Task<Item[]> GetAllItems(Guid id);
+        Task<Item> AddItem(Guid id, NewItem item);
+        Task<Item> DeleteItem(Guid id, Guid itemId);
 
-        Task<Item> GetItem(Guid playerId, Guid itemId);
-        Task<Item[]> GetAllItems(Guid playerId);
-        Task<Item> AddItem(Guid playerId, NewItem item);
-        Task<Item> DeleteItem(Guid playerId, Guid itemId);
+        Task<Item> HandleItem(Guid id, Guid itemId, ItemActions action);
+
+        Task<Player[]> GetLeaderBoard(LeaderBoardOrderBy orderBy);
 
     }
 

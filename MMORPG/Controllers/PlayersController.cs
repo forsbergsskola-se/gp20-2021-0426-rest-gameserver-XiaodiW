@@ -54,6 +54,18 @@ namespace MMORPG.Controllers {
             return await Repository.DoQuests(id,questId);
         }
         
+        [HttpPost("{id:guid}/level")]
+        [ExactQueryParam("byGold")]
+        public async Task<Player> UpgradeLevel([FromQuery]Guid id,[FromQuery]int gold) {
+            return await Repository.UpgradeLevel(id,gold);
+        }
+        
+        [HttpPost("{id:guid}/level")]
+        [ExactQueryParam("byExp")]
+        public async Task<Player> UpgradeLevel([FromQuery]Guid id) {
+            return await Repository.UpgradeLevel(id);
+        }
+        
         [HttpGet]
         [ActionName(nameof(GetScoreGt))]
         [ExactQueryParam("minScore")]
@@ -68,6 +80,12 @@ namespace MMORPG.Controllers {
             return await Repository.GetPlayerByName(playerName);
         }
         
+        [HttpGet]
+        [ActionName(nameof(GetLeaderBoard))]
+        [ExactQueryParam("orderBy")]
+        public async Task<Player[]> GetLeaderBoard([FromQuery]LeaderBoardOrderBy orderBy) {
+            return await Repository.GetLeaderBoard(orderBy);
+        }
     }
 
 }

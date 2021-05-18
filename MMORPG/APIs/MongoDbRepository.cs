@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using MMORPG.Filters;
 using MMORPG.Help;
+using MMORPG.Types;
 using MMORPG.Types.Item;
 using MMORPG.Types.Player;
 using MMORPG.Types.Quest;
@@ -99,8 +101,8 @@ namespace MMORPG.APIs {
             var quests = Quest.GetQuests(player);
             if(player.Quests.Equals(quests)) return player;
             var update = Builders<Player>.Update
-                .Set("Quests", quests)
-                .Set("LastGetQuests", DateTime.Now);
+                .Set(p=>p.Quests, quests)
+                .Set(p=>p.LastGetQuests, DateTime.Now);
             await UpdatePlayer(id, update);
             player = await GetPlayer(id);
             return player;
@@ -119,12 +121,35 @@ namespace MMORPG.APIs {
             quests.Where(w=> w.Id == questId).ToList().ForEach(s=>s.Status = QuestStatus.Done);
             
             var update = Builders<Player>.Update
-                .Set("Experience", player.Experience + quest.Experience)
-                .Set("Gold", player.Gold + quest.Gold)
-                .Set("Items", items)
-                .Set("Quests", quests);
+                .Set(p=>p.Experience, player.Experience + quest.Experience)
+                .Set(p=>p.Gold, player.Gold + quest.Gold)
+                .Set(p=>p.Items, items)
+                .Set(p=>p.Quests, quests);
             await UpdatePlayer(id, update);
             player = await GetPlayer(id);
+            return player;
+        }
+
+        public async Task<Player> UpgradeLevel(Guid id, int gold) {
+            var player = await GetPlayer(id);
+            var count = player.Gold % 100;
+            if(count <= 0 || player.Gold < gold) 
+                throw new GameRestrictionException("Player has no sufficient Gold to Upgrade Level");
+            var modifiedPlayer = new ModifiedPlayer();
+            modifiedPlayer.Gold = player.Gold - gold;
+            modifiedPlayer.Level = player.Level + count;
+            player = await Modify(id, modifiedPlayer);
+            return player;
+        }
+
+        public async Task<Player> UpgradeLevel(Guid id) {
+            var player = await GetPlayer(id);
+            var count = player.Experience % 100;
+            if(count <= 0) throw new GameRestrictionException("Player has no sufficient Exp to Upgrade Level");
+            var modifiedPlayer = new ModifiedPlayer();
+            modifiedPlayer.Experience = player.Experience - count * 100;
+            modifiedPlayer.Level = player.Level + count;
+            player = await Modify(id, modifiedPlayer);
             return player;
         }
 
@@ -143,8 +168,8 @@ namespace MMORPG.APIs {
 
         public async Task<Item> AddItem(Guid id, NewItem item) {
             var player = await GetPlayer(id);
-            if(item.Type == ItemType.Sword && player.Level < 3) throw new NewItemValidationException();
-            var result = new Item(item.Name, item.Type);
+            if(item.Type == 0 && player.Level < 3) throw new NewItemValidationException();
+            var result = new Item();
             var update = Builders<Player>.Update.AddToSet(x => x.Items, result);
             await UpdatePlayer(id,update);
             return result;
@@ -158,6 +183,64 @@ namespace MMORPG.APIs {
             await UpdatePlayer(id,update);
             return result;
         }
+
+        public async Task<Item> HandleItem(Guid id, Guid itemId,ItemActions actions) {
+            var player = await GetPlayer(id);
+            var items = player.Items.ToList();
+            var result = items.Find(item => item.Id == itemId);
+            if(result == null) throw new NotFoundException("Item ID Not Found!");
+            UpdateDefinition<Player> update = null;
+            switch(actions) {
+                case ItemActions.Sell: 
+                    if(result.IsEquipped)  throw new GameRestrictionException("Item cannot be Sold, have to be unequipped first.");
+                    items.Where(i=>i.Id == id).ToList().ForEach(i=>i.IsDeleted = true);
+                    update = Builders<Player>.Update
+                        .Set(p => p.Gold, player.Gold + result.Price)
+                        .Set(p => p.Items, items);
+                    break;
+                case ItemActions.Equip:
+                    var equippedSameType = items.Any(i => i.IsEquipped && i.Type == result.Type);
+                    if(equippedSameType)  
+                        throw new GameRestrictionException("Item cannot be equipped, the same type item has to be unequipped first.");
+                    if(player.Level < result.LevelRequired)
+                        throw new GameRestrictionException("Item cannot be equipped, Player Level not match requirement.");
+                    items.Where(i=>i.Id == id).ToList().ForEach(i=>i.IsEquipped = true);
+                    update = Builders<Player>.Update
+                        .Set(p => p.Level, player.Level + result.LevelBonus)
+                        .Set(p => p.Items, items);
+                    break;
+                case ItemActions.Unequip:
+                    var newLevel = player.Level - result.LevelBonus;
+                    items.Where(i=>i.Id == id || newLevel <i.LevelRequired).ToList().ForEach(i=>i.IsEquipped = false);
+                    update = Builders<Player>.Update
+                        .Set(p => p.Level, newLevel)
+                        .Set(p => p.Items, items);
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(actions), actions, null);
+            }
+            await UpdatePlayer(id, update);
+            return result;
+        }
+
+        public async Task<Player[]> GetLeaderBoard(LeaderBoardOrderBy orderBy) {
+            var filter = SimpleFilter(null, null, null);
+            SortDefinition<Player> sort = null;
+            switch(orderBy) {
+                case LeaderBoardOrderBy.Level:
+                    sort = Builders<Player>.Sort.Ascending(p => p.Level);
+                    break;
+                case LeaderBoardOrderBy.Gold: 
+                    sort = Builders<Player>.Sort.Ascending(p => p.Gold);
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(orderBy), orderBy, null);
+            }
+            var response = await Collection.Find(filter).Sort(sort).Limit(10).ToListAsync();
+            var restriction = new[] {"Name", "Level", "Gold"};
+            var result = ComApi.RestrictedData(response,restriction).ToArray();
+            return result;
+
+        }
+
         private static async Task<Player> GetPlayer(Guid id) {
             Player player;
             var filter = SimpleFilter(id,null,false);
