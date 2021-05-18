@@ -19,8 +19,8 @@ namespace MMORPG.Controllers {
         }
 
         [HttpGet("{id:guid}")] 
-        public async Task<Player> Get(Guid id) {
-            return await Repository.Get(id); 
+        public async Task<Player> AdminGet(Guid id) {
+            return await Repository.AdminGet(id); 
         }
         [HttpGet]
         public async Task<Player[]> AdminGetAll() {

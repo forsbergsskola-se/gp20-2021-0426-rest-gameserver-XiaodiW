@@ -43,6 +43,10 @@ namespace MMORPG.APIs {
             return result;
         }
 
+        public Task<Player> AdminGet(Guid id) {
+            throw new NotImplementedException();
+        }
+
         public async Task<Player[]> GetAll() {
             var result = await ReadFile();
             if(result == null) result = new List<Player>();
@@ -116,6 +120,10 @@ namespace MMORPG.APIs {
         }
 
         public Task<Player> GetQuests(Guid id) {
+            throw new NotImplementedException();
+        }
+
+        public Task<Player> DoQuests(Guid id, Guid questId) {
             throw new NotImplementedException();
         }
 

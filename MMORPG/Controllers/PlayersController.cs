@@ -44,9 +44,14 @@ namespace MMORPG.Controllers {
             return await Repository.Delete(id);
         }
         
-        [HttpPost("{id:guid}/getquest")]
+        [HttpPost("{id:guid}/quest")]
         public async Task<Player> GetQuests(Guid id) {
             return await Repository.GetQuests(id);
+        }
+        
+        [HttpPost("{id:guid}/quest/{questId:guid}")]
+        public async Task<Player> DoQuests(Guid id,Guid questId) {
+            return await Repository.DoQuests(id,questId);
         }
         
         [HttpGet]

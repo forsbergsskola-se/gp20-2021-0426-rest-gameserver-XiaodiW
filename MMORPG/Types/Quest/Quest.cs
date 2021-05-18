@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using MMORPG.Help;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace MMORPG.Types.Quest {
@@ -39,13 +40,12 @@ namespace MMORPG.Types.Quest {
         }
 
         public static List<Quest> GetQuests(Player.Player player) {
+            var questsList = player.Quests.ToList();
             //GEtQuest can only be trigger after a const interval;
             var lastGetElapse = (DateTime.Now - player.LastGetQuests).TotalSeconds;
-            if(lastGetElapse < Quest.GetQuestInterval) return player.Quests;
-            var questsList = player.Quests.ToList();
+            if(lastGetElapse < GetQuestInterval) return questsList;
             var removeList = questsList.Where(quest => quest.Status != QuestStatus.Done).ToList();
             foreach(var quest in removeList) questsList.Remove(quest);
-
             var rnd = new Random(DateTime.Now.Millisecond);
             var count = rnd.Next(1, 5);
             while(count >0) {
@@ -53,6 +53,13 @@ namespace MMORPG.Types.Quest {
                 questsList.Add(new Quest(player.Level));
             }
             return questsList;
+        }
+
+        public static Quest DoQuests(Player.Player player, Guid id) {
+            var questsList = player.Quests;
+            var quest = questsList.FirstOrDefault(x => x.Id == id);
+            if(quest == null) throw new NotFoundException("Quest ID Not Found!");
+            return quest;
         }
     }
 

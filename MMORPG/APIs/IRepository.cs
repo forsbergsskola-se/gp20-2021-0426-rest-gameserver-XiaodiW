@@ -9,6 +9,7 @@ namespace MMORPG.APIs {
     public interface IRepository
     {
         Task<Player> Get(Guid id);
+        Task<Player> AdminGet(Guid id);
         Task<Player[]> GetAll();
         Task<Player[]> AdminGetAll();
         Task<Player> Create(NewPlayer newPlayer);
@@ -20,6 +21,8 @@ namespace MMORPG.APIs {
         Task<Player[]> GetPlayerByName(string name);
         
         Task<Player> GetQuests(Guid id);
+        Task<Player> DoQuests(Guid id,Guid questId);
+
 
         Task<Item> GetItem(Guid playerId, Guid itemId);
         Task<Item[]> GetAllItems(Guid playerId);
