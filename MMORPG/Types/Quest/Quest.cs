@@ -25,13 +25,13 @@ namespace MMORPG.Types.Quest {
         public Quest(int playerLevel) {
             Id = Guid.NewGuid();
             var minLevel = playerLevel - 3 < 0 ? 0 : playerLevel - 3;
-            var maxLevel = playerLevel + 2;
+            var maxLevel = playerLevel + 1;
             var rnd = new Random(DateTime.Now.Millisecond);
             Level = rnd.Next(minLevel, maxLevel);
-            Experience = rnd.Next(1, 20) * Math.Max(1,Level);
+            Experience = rnd.Next(3, 20) * Math.Max(1,Level);
             RewardGold = rnd.NextDouble() >= 0.5;
-            Gold = RewardGold? rnd.Next(1, 5) * Math.Max(1,Level): 0;
-            Item = !RewardGold? new Item.Item(true): null;
+            Gold = RewardGold? rnd.Next(3, 20) * Math.Max(1,Level): 0;
+            Item = !RewardGold? new Item.Item(): null;
             CreateTime = DateTime.Now;
             ExpiredTime = rnd.Next(60, 2000) * Math.Max(1,Level);
             Status = QuestStatus.New;

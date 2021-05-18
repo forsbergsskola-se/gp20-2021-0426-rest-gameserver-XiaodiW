@@ -10,8 +10,8 @@ namespace MMORPG.Types.Player {
     public class Player
     {
 
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+        public Guid Id { get; private set; }
+        public string Name { get; private set; }
         public int Score { get; set; }
         public int Experience { get; set; }
         public int Level { get; set; }
@@ -19,7 +19,7 @@ namespace MMORPG.Types.Player {
         public bool IsDeleted { get; set; }
         
         [DateValidation]
-        public DateTime CreationTime { get; set; }
+        public DateTime CreationTime { get; private set; }
         public List<Item.Item> Items { get; set; }
         
         public List<string> Tag { get; set; }
