@@ -227,10 +227,10 @@ namespace MMORPG.APIs {
             SortDefinition<Player> sort = null;
             switch(orderBy) {
                 case LeaderBoardOrderBy.Level:
-                    sort = Builders<Player>.Sort.Ascending(p => p.Level);
+                    sort = Builders<Player>.Sort.Descending(p => p.Level);
                     break;
                 case LeaderBoardOrderBy.Gold: 
-                    sort = Builders<Player>.Sort.Ascending(p => p.Gold);
+                    sort = Builders<Player>.Sort.Descending(p => p.Gold);
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(orderBy), orderBy, null);
             }
