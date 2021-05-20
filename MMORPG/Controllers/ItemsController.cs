@@ -27,8 +27,9 @@ namespace MMORPG.Controllers {
             return await Repository.GetAllItems(playerId);
         }
         
-        [HttpPost("{id:guid}/items/{itemId:guid}/{action}")] 
-        public async Task<Item> SoldItem(Guid id, Guid itemId, ItemActions action) {
+        [HttpPost("{id:guid}/items/{itemId:guid}")] 
+        [ExactQueryParam("action")]
+        public async Task<Item> HandleItem(Guid id, Guid itemId, [FromQuery]ItemActions action) {
             return await Repository.HandleItem(id,itemId,action);
         }
         

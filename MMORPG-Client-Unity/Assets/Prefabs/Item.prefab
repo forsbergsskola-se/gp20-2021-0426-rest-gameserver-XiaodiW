@@ -320,7 +320,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3881744766789767661}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 292663348502941306}
+        m_TargetAssemblyTypeName: ItemInfo, Assembly-CSharp
+        m_MethodName: SellItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3881744766893288007
 GameObject:
   m_ObjectHideFlags: 0
@@ -568,6 +580,7 @@ GameObject:
   - component: {fileID: 3881744767681762648}
   - component: {fileID: 3881744767681762651}
   - component: {fileID: 3881744767681762650}
+  - component: {fileID: 292663348502941306}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -669,6 +682,23 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &292663348502941306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3881744767681762652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4af3967fae5d840f3b51258750102900, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: {fileID: 3881744767847291905}
+  rarity: {fileID: 3881744768170885332}
+  level: {fileID: 3881744768042010135}
+  price: {fileID: 3881744768376555746}
+  levelBonus: {fileID: 3881744768456075488}
 --- !u!1 &3881744767691661742
 GameObject:
   m_ObjectHideFlags: 0

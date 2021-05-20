@@ -193,7 +193,7 @@ namespace MMORPG.APIs {
             switch(actions) {
                 case ItemActions.Sell: 
                     if(result.IsEquipped)  throw new GameRestrictionException("Item cannot be Sold, have to be unequipped first.");
-                    items.Where(i=>i.Id == id).ToList().ForEach(i=>i.IsDeleted = true);
+                    items.Where(i=>i.Id == itemId).ToList().ForEach(i=>i.IsDeleted = true);
                     update = Builders<Player>.Update
                         .Set(p => p.Gold, player.Gold + result.Price)
                         .Set(p => p.Items, items);

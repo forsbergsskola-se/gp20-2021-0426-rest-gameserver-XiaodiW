@@ -1,4 +1,7 @@
 using System;
+using System.Threading.Tasks;
+using Comm;
+using MMORPG.Types.Item;
 using Newtonsoft.Json;
 
 namespace Types.Item {
@@ -23,6 +26,14 @@ namespace Types.Item {
         
         [JsonIgnore]
         public Player.Player Player { get; set; }
+
+        public static async Task<Item> HandleItem(Guid id, Guid itemId, ItemActions action) {
+            var url = new Uri($"{GlobalSetting.UrlRoot}/players/{id}/items/{itemId}/?action={action}");
+            var restPost = new RestApiPost(url,null);
+            var responseData = await restPost.Post();
+            var  result = JsonConvert.DeserializeObject<Item>(responseData);
+            return result;
+        }
     }
 
 }

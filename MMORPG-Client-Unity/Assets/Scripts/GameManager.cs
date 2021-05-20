@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Types.Player;
@@ -8,27 +6,31 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour
-{
-    
+public partial class GameManager : MonoBehaviour {
+    private EventsBroker broker;
     private Guid PlayerId => JsonConvert.DeserializeObject<Guid>(PlayerPrefs.GetString("PlayerId"));
     public Text Name;
     public Text Level;
     public Text Gold;
     public Text Exp;
 
-    public UnityAction UpdatePlayerProfile;
 
-    private void Start() {
-        UpdatePlayerProfile += UpdatePlayer;
-        UpdatePlayerProfile.Invoke();
+    private async void Start() {
+        broker = GetComponent<EventsBroker>();
+        broker.SubscribeTo<UpdatePlayerEvent>(UpdatePlayerUI);
+        await UpdatePlayer();
+    }
+    
+    public async Task UpdatePlayer() {
+        var player = await Player.GetPlayer(PlayerId);
+        broker.Publish(new UpdatePlayerEvent(player));
     }
 
-    private async void UpdatePlayer() {
-        var player = await Player.GetPlayer(PlayerId);
+    private void UpdatePlayerUI(UpdatePlayerEvent e) {
+        var player = e.Player;
         Name.text = player.Name;
-        Level.text = player.Level.ToString();
-        Gold.text = player.Gold.ToString();
-        Exp.text = player.Experience.ToString();
+        Level.text = "Level: " + player.Level;
+        Gold.text = "Gold: " + player.Gold;
+        Exp.text = "Exp: " + player.Experience;
     }
 }
