@@ -11,15 +11,15 @@ namespace Types.Player {
     public class Player
     {
 
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
         public int Score { get; set; }
         public int Experience { get; set; }
         public int Level { get; set; }
         public int Gold { get; set; }
         public bool IsDeleted { get; set; }
         
-        public DateTime CreationTime { get; private set; }
+        public DateTime CreationTime { get; set; }
         public List<Item.Item> Items { get; set; }
         
         public List<string> Tag { get; set; }
@@ -27,7 +27,7 @@ namespace Types.Player {
         public DateTime LastGetQuests { get; set; }
         
         public static async Task<Player> GetPlayer(Guid id) {
-            var url = new Uri($"{GlobalSetting.UrlRoot}/players/{id}/delete");
+            var url = new Uri($"{GlobalSetting.UrlRoot}/players/{id}");
             var restGet = new RestApiGet(url);
             var responseData = await restGet.Get();
             var result = JsonConvert.DeserializeObject<Player>(responseData);
@@ -37,14 +37,8 @@ namespace Types.Player {
             var url = new Uri($"{GlobalSetting.UrlRoot}/players");
             var restPost = new RestApiPost(url,new NewPlayer(){Name = name});
             var responseData = await restPost.Post();
-            Player newPlayer = null;
-            try {
-                newPlayer = JsonConvert.DeserializeObject<Player>(responseData, new JsonSerializerSettings());
-            }
-            catch(JsonException e) {
-                Debug.Log(e.Message);
-            }
-            return newPlayer;
+            var  result = JsonConvert.DeserializeObject<Player>(responseData);
+            return result;
         }
     }
 

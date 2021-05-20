@@ -3,7 +3,6 @@ using System;
 namespace Types.Quest {
 
     public class Quest {
-        public const int GetQuestInterval = 60;
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int Level { get; set; }
