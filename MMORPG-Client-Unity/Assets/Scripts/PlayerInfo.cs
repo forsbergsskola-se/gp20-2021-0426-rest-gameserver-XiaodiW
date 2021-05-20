@@ -1,6 +1,8 @@
 using System.Collections;
+using Newtonsoft.Json;
 using Types.Player;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerInfo : MonoBehaviour {
@@ -22,5 +24,11 @@ public class PlayerInfo : MonoBehaviour {
         Gold.text = player.Gold.ToString();
         Exp.text = player.Experience.ToString();
         Item.text = player.Items.Count.ToString();
+    }
+
+    public void LoadPlayerScene() {
+        var str = JsonConvert.SerializeObject(player.Id);
+        PlayerPrefs.SetString("PlayerId", str);
+        SceneManager.LoadScene("Main");
     }
 }
