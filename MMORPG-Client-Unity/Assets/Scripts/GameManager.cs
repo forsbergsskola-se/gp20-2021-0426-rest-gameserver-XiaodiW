@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Types.Player;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public partial class GameManager : MonoBehaviour {
@@ -18,6 +17,7 @@ public partial class GameManager : MonoBehaviour {
     private async void Start() {
         broker = GetComponent<EventsBroker>();
         broker.SubscribeTo<UpdatePlayerEvent>(UpdatePlayerUI);
+        FindObjectOfType<QuestList>().GetQuest();
         await UpdatePlayer();
     }
     

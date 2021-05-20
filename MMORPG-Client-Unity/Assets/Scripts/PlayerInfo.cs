@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using Newtonsoft.Json;
 using Types.Player;
 using UnityEngine;
@@ -23,7 +24,7 @@ public class PlayerInfo : MonoBehaviour {
         Level.text = player.Level.ToString();
         Gold.text = player.Gold.ToString();
         Exp.text = player.Experience.ToString();
-        Item.text = player.Items.Count.ToString();
+        Item.text = player.Items.Count(i => !i.IsDeleted).ToString();
     }
 
     public void LoadPlayerScene() {
