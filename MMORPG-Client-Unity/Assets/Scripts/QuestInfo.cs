@@ -20,17 +20,16 @@ public class QuestInfo : MonoBehaviour {
 
     private IEnumerator InstantiateQuest() {
         yield return new WaitUntil(() => quest != null);
-        var leftCons = 10;
+        var leftCons = 12;
         var rightCons = 15;
         var levelstr = "Level:";
-        level.text = levelstr.PadRight(leftCons) +"\n" +quest.Level.ToString().PadLeft(rightCons);
-        var expstr = "Exp:";
-        exp.text = expstr.PadRight(leftCons) +"\n" + quest.Experience.ToString().PadLeft(rightCons);
+        level.text = levelstr.PadRight(leftCons)  +quest.Level.ToString().PadLeft(rightCons);
+        var expstr = "Experience:";
+        exp.text = expstr.PadRight(leftCons) + quest.Experience.ToString().PadLeft(rightCons);
         var goldstr = "Gold:";
-        var itemstr = "Item:";
         reward.text = quest.RewardGold
-            ? goldstr.PadRight(leftCons) +"\n" + quest.Gold.ToString().PadLeft(rightCons)
-            : itemstr.PadRight(leftCons) +"\n" + quest.Item.Name.PadLeft(rightCons);
+            ? goldstr.PadRight(leftCons) + quest.Gold.ToString().PadLeft(rightCons)
+            : quest.Item.Name.PadLeft(rightCons);
     }
 
     public async void DoQuest() {

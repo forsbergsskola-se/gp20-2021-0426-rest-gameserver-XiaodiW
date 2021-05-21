@@ -23,9 +23,7 @@ public class QuestList : MonoBehaviour {
             var instance = Instantiate(questPrefab, transform);
             instance.GetComponent<QuestInfo>().quest = quest;
         }
-        for(int i = 0; i < 5-questList.Count; i++) {
-            Instantiate(questEmpty, transform);
-        }
+        for(var i = 0; i < 5 - questList.Count; i++) Instantiate(questEmpty, transform);
     }
 
     public async void GetQuest() {

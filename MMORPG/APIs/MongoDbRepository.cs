@@ -97,7 +97,6 @@ namespace MMORPG.APIs {
 
         public async Task<Player> GetQuests(Guid id) {
             var player = await GetPlayer(id);
-
             var quests = Quest.GetQuests(player);
             if(player.Quests.Equals(quests)) return player;
             var update = Builders<Player>.Update
@@ -110,12 +109,11 @@ namespace MMORPG.APIs {
 
         public async Task<Player> DoQuests(Guid id, Guid questId) {
             var player = await GetPlayer(id);
-            
-            var quest = Quest.DoQuests(player,questId);
+            var quest = Quest.DoQuest(player,questId);
             if(player.Level < quest.Level) throw new GameRestrictionException("Player Level not match!");
             
             var items = player.Items;
-            items.Add(quest.Item);
+            if(quest.Item !=null) items.Add(quest.Item);
             
             var quests = player.Quests;
             quests.Where(w=> w.Id == questId).ToList().ForEach(s=>s.Status = QuestStatus.Done);
@@ -132,7 +130,7 @@ namespace MMORPG.APIs {
 
         public async Task<Player> UpgradeLevel(Guid id, int gold) {
             var player = await GetPlayer(id);
-            var count = player.Gold % 100;
+            var count = player.Gold / 100;
             if(count <= 0 || player.Gold < gold) 
                 throw new GameRestrictionException("Player has no sufficient Gold to Upgrade Level");
             var modifiedPlayer = new ModifiedPlayer();
@@ -144,7 +142,7 @@ namespace MMORPG.APIs {
 
         public async Task<Player> UpgradeLevel(Guid id) {
             var player = await GetPlayer(id);
-            var count = player.Experience % 100;
+            var count = player.Experience / 100;
             if(count <= 0) throw new GameRestrictionException("Player has no sufficient Exp to Upgrade Level");
             var modifiedPlayer = new ModifiedPlayer();
             modifiedPlayer.Experience = player.Experience - count * 100;

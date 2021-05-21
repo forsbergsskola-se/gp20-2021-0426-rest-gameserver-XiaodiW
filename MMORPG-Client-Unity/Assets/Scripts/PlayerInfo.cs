@@ -24,7 +24,8 @@ public class PlayerInfo : MonoBehaviour {
         Level.text = player.Level.ToString();
         Gold.text = player.Gold.ToString();
         Exp.text = player.Experience.ToString();
-        Item.text = player.Items.Count(i => !i.IsDeleted).ToString();
+        var itemCount = player.Items.Count(i => !i.IsDeleted);
+        Item.text = itemCount.ToString();
     }
 
     public void LoadPlayerScene() {

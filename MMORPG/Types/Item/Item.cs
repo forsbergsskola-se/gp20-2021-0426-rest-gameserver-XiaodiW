@@ -32,14 +32,15 @@ namespace MMORPG.Types.Item {
 
         public Item() {
             Id = Guid.NewGuid();
-            var rnd = new Random(DateTime.Now.Millisecond);
+            var rnd = new Random();
             var maxType = Enum.GetValues(typeof(ItemType)).Cast<int>().Max();
             Type = (ItemType)rnd.Next(0,maxType);
             var maxRarity = Enum.GetValues(typeof(ItemType)).Cast<int>().Max();
             Rarity = (ItemRarity)rnd.Next(0,maxRarity);
+            Price = ((int) Rarity + 1) * 100 - rnd.Next(0, 100);
             LevelRequired = ((int)Rarity+1)*10-rnd.Next(0,10);
             LevelBonus = ((int) Rarity + 1) * rnd.Next(1, 3);
-            Name = $"{LevelRequired}{Rarity}_{Type}{LevelBonus}";
+            Name = $"{LevelRequired}{Rarity}{Type}{LevelBonus}";
             IsDeleted = false;
             IsEquipped = false;
             CreationTime = DateTime.Now;

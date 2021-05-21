@@ -56,13 +56,12 @@ namespace MMORPG.Controllers {
         
         [HttpPost("{id:guid}/level")]
         [ExactQueryParam("byGold")]
-        public async Task<Player> UpgradeLevel([FromQuery]Guid id,[FromQuery]int gold) {
+        public async Task<Player> UpgradeLevel(Guid id,[FromQuery]int gold) {
             return await Repository.UpgradeLevel(id,gold);
         }
         
         [HttpPost("{id:guid}/level")]
-        [ExactQueryParam("byExp")]
-        public async Task<Player> UpgradeLevel([FromQuery]Guid id) {
+        public async Task<Player> UpgradeLevel(Guid id) {
             return await Repository.UpgradeLevel(id);
         }
         
