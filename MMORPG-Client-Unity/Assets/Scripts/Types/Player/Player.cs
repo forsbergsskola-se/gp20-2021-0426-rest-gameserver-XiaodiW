@@ -40,6 +40,15 @@ namespace Types.Player {
             var  result = JsonConvert.DeserializeObject<Player>(responseData);
             return result;
         }
+        
+        public static async Task<Player> UpgradeLevel(Guid id){
+            var url = new Uri($"{GlobalSetting.UrlRoot}/players/{id}/level");
+            var restPost = new RestApiPost(url,null);
+            var responseData = await restPost.Post();
+            var  result = JsonConvert.DeserializeObject<Player>(responseData);
+            if(result.Id == Guid.Empty) throw new Exception(responseData);
+            return result;
+        }
     }
 
 }

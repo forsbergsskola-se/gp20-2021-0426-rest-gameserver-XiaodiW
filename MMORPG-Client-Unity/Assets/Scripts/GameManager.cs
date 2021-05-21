@@ -33,4 +33,9 @@ public partial class GameManager : MonoBehaviour {
         Gold.text = "Gold: " + player.Gold;
         Exp.text = "Exp: " + player.Experience;
     }
+
+    public async void UpdatePlayerLevel() {
+        await Player.UpgradeLevel(PlayerId);
+        await UpdatePlayer();
+    }
 }
