@@ -14,6 +14,7 @@ public class ItemInfo : MonoBehaviour {
     public Text level;
     public Text price;
     public Text levelBonus;
+    public Text EquipButton;
     private Guid PlayerId => JsonConvert.DeserializeObject<Guid>(PlayerPrefs.GetString("PlayerId"));
 
     private void Start() {
@@ -27,6 +28,7 @@ public class ItemInfo : MonoBehaviour {
         level.text = item.LevelRequired.ToString();
         price.text = item.Price.ToString();
         levelBonus.text = item.LevelBonus.ToString();
+        EquipButton.text = item.IsEquipped ? "UnEquip" : "Equip";
     }
 
     public async void SellItem() {
@@ -34,4 +36,11 @@ public class ItemInfo : MonoBehaviour {
         var player = await Player.GetPlayer(PlayerId);
         FindObjectOfType<EventsBroker>().Publish(new UpdatePlayerEvent(player));
     }
+    public async void EquipItem() {
+        var action = item.IsEquipped ? ItemActions.Unequip : ItemActions.Equip;
+        await Item.HandleItem(PlayerId, item.Id, action);
+        var player = await Player.GetPlayer(PlayerId);
+        FindObjectOfType<EventsBroker>().Publish(new UpdatePlayerEvent(player));
+    }
+    
 }

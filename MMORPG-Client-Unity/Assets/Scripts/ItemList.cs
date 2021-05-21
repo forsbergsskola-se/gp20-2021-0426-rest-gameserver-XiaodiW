@@ -11,7 +11,7 @@ public class ItemList : MonoBehaviour {
 
     private void GenerateItemList(UpdatePlayerEvent e) {
         if(e.Player.Items == null) return;
-        var itemList = e.Player.Items.OrderBy(i=>i.LevelRequired).ThenBy(i=>i.IsEquipped).ToList();
+        var itemList = e.Player.Items.OrderByDescending(i=>i.IsEquipped).ThenBy(i=>i.LevelRequired).ToList();
         foreach(Transform child in transform) Destroy(child.gameObject);
         foreach(var item in itemList) {
             if(item.IsDeleted) continue;

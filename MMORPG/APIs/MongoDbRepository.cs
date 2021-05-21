@@ -202,14 +202,14 @@ namespace MMORPG.APIs {
                         throw new GameRestrictionException("Item cannot be equipped, the same type item has to be unequipped first.");
                     if(player.Level < result.LevelRequired)
                         throw new GameRestrictionException("Item cannot be equipped, Player Level not match requirement.");
-                    items.Where(i=>i.Id == id).ToList().ForEach(i=>i.IsEquipped = true);
+                    items.Where(i=>i.Id == itemId).ToList().ForEach(i=>i.IsEquipped = true);
                     update = Builders<Player>.Update
                         .Set(p => p.Level, player.Level + result.LevelBonus)
                         .Set(p => p.Items, items);
                     break;
                 case ItemActions.Unequip:
                     var newLevel = player.Level - result.LevelBonus;
-                    items.Where(i=>i.Id == id || newLevel <i.LevelRequired).ToList().ForEach(i=>i.IsEquipped = false);
+                    items.Where(i=>i.Id == itemId || newLevel <i.LevelRequired).ToList().ForEach(i=>i.IsEquipped = false);
                     update = Builders<Player>.Update
                         .Set(p => p.Level, newLevel)
                         .Set(p => p.Items, items);

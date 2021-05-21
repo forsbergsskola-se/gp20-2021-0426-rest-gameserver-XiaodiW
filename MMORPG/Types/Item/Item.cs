@@ -33,9 +33,9 @@ namespace MMORPG.Types.Item {
         public Item(int playerLevel) {
             Id = Guid.NewGuid();
             var rnd = new Random();
-            var maxType = Enum.GetValues(typeof(ItemType)).Cast<int>().Max();
+            var maxType = Enum.GetValues(typeof(ItemType)).Cast<int>().Max()+1;
             Type = (ItemType) rnd.Next(0, maxType);
-            var maxRarity = Enum.GetValues(typeof(ItemType)).Cast<int>().Max();
+            var maxRarity = Enum.GetValues(typeof(ItemType)).Cast<int>().Max()+1;
             Rarity = (ItemRarity) rnd.Next(0, maxRarity);
             Price = ((int) Rarity * playerLevel + 1) * 100 - rnd.Next(0, 100);
             var minLevel = playerLevel - 3 < 0 ? 0 : playerLevel - 3;

@@ -30,7 +30,8 @@ namespace Types.Item {
             var url = new Uri($"{GlobalSetting.UrlRoot}/players/{id}/items/{itemId}/?action={action}");
             var restPost = new RestApiPost(url,null);
             var responseData = await restPost.Post();
-            var  result = JsonConvert.DeserializeObject<Item>(responseData);
+            var result = JsonConvert.DeserializeObject<Item>(responseData);
+            if(result.Id == Guid.Empty) throw new Exception(responseData);
             return result;
         }
     }
