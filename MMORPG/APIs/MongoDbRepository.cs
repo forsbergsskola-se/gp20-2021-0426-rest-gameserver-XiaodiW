@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using MMORPG.Controllers;
 using MMORPG.Filters;
 using MMORPG.Help;
 using MMORPG.Types;
@@ -10,6 +11,7 @@ using MMORPG.Types.Item;
 using MMORPG.Types.Player;
 using MMORPG.Types.Quest;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace MMORPG.APIs {
 
@@ -237,6 +239,27 @@ namespace MMORPG.APIs {
             var result = ComApi.RestrictedData(response,restriction).ToArray();
             return result;
 
+        }
+
+        public async Task<long> GetStats(StatsRequest request) {
+            long result;
+            switch(request) {
+                case StatsRequest.PlayerCount:
+                    var filter = SimpleFilter(null, null, null);
+                    result = await Collection.CountDocumentsAsync(filter);
+                    break;
+                case StatsRequest.TotalGold: 
+                    result = await Collection.AsQueryable().SumAsync(p=>p.Gold);
+                    break;
+                case StatsRequest.TotalItem: 
+                    result = await Collection.AsQueryable().SumAsync(p=>p.Items.Count);
+                    break;
+                case StatsRequest.TotalLevel: 
+                    result = await Collection.AsQueryable().SumAsync(p=>p.Level);
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(request), request, null);
+            }
+            return result;
         }
 
         private static async Task<Player> GetPlayer(Guid id) {

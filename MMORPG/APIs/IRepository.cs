@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using MMORPG.Controllers;
 using MMORPG.Types;
 using MMORPG.Types.Item;
 using MMORPG.Types.Player;
@@ -34,7 +35,9 @@ namespace MMORPG.APIs {
         Task<Item> HandleItem(Guid id, Guid itemId, ItemActions action);
 
         Task<Player[]> GetLeaderBoard(LeaderBoardOrderBy orderBy);
-
+        
+        
+        Task<long> GetStats(StatsRequest request);
     }
 
 }

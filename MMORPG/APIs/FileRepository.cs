@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using MMORPG.Controllers;
 using MMORPG.Filters;
 using MMORPG.Help;
 using MMORPG.Types;
@@ -186,6 +187,10 @@ namespace MMORPG.APIs {
         }
 
         public Task<Player[]> GetLeaderBoard(LeaderBoardOrderBy orderBy) {
+            throw new NotImplementedException();
+        }
+
+        public Task<long> GetStats(StatsRequest request) {
             throw new NotImplementedException();
         }
     }
