@@ -909,7 +909,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: {fileID: 799072138}
-  login: {fileID: 1744243476}
+  playerList: {fileID: 1744243476}
 --- !u!1 &741040720
 GameObject:
   m_ObjectHideFlags: 0

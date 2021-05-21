@@ -2,16 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using LameScooter.Interface;
+using LameScooter.Type;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
-namespace LameScooter {
+namespace LameScooter.Controllers {
 
     public class MongoDBLameScooterRental : ILameScooterRental {
         private async Task<List<StationData>> ReadOffineFile() {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
+using LameScooter.Controllers;
+using LameScooter.Interface;
 
 namespace LameScooter
 {

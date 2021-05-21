@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LameScooter {
+namespace LameScooter.Type {
 
     public class OnlineData {
         public List<StationData> stations { get; set; }

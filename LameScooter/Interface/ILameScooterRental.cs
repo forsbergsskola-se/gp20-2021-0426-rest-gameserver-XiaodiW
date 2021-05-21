@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace LameScooter {
+namespace LameScooter.Interface {
 
     public interface ILameScooterRental {
         string Method { get; }

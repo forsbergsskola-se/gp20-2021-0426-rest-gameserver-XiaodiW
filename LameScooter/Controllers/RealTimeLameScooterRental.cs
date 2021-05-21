@@ -5,10 +5,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using LameScooter.Interface;
+using LameScooter.Type;
 
-namespace LameScooter {
+namespace LameScooter.Controllers {
 
     public class RealTimeLameScooterRental : ILameScooterRental {
         private async Task<List<StationData>> ReadOffineFile() {
