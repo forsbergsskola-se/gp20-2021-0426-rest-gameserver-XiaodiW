@@ -24,6 +24,7 @@ namespace Types.Quest {
             var restPost = new RestApiPost(url, null);
             var responseData = await restPost.Post();
             var result = JsonConvert.DeserializeObject<Player.Player>(responseData);
+            if(result.Id == Guid.Empty) throw new Exception(responseData);
             return result;
         }
         

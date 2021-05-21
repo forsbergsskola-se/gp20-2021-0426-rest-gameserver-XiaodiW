@@ -33,7 +33,7 @@ namespace MMORPG.Types.Player {
             Level = 0;
             Gold = 0;
             IsDeleted = false;
-            CreationTime = DateTime.Now;
+            CreationTime = DateTime.UtcNow;
             Items = new List<Item.Item>();
             Quests = new List<Quest.Quest>();
         }

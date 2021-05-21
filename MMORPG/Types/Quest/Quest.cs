@@ -10,7 +10,7 @@ namespace MMORPG.Types.Quest {
     [BsonIgnoreExtraElements]
     [BsonNoId]
     public class Quest {
-        public const int GetQuestInterval = 600;
+        public const int GetQuestInterval = 60;
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int Level { get; set; }
@@ -32,7 +32,7 @@ namespace MMORPG.Types.Quest {
             RewardGold = rnd.Next(0, 2) == 1;
             Gold = RewardGold? rnd.Next(3, 21) * Math.Max(1,Level): 0;
             Item = !RewardGold? new Item.Item(playerLevel): null;
-            CreateTime = DateTime.Now;
+            CreateTime = DateTime.UtcNow;
             ExpiredTime = rnd.Next(60, 2000) * Math.Max(1,Level);
             Status = QuestStatus.New;
             var str = RewardGold ? $"Gold{Gold}" : $"{Item.Name}";
@@ -42,11 +42,12 @@ namespace MMORPG.Types.Quest {
         public static List<Quest> GetQuests(Player.Player player) {
             var questsList = player.Quests.ToList();
             //GEtQuest can only be trigger after a const interval;
-            var lastGetElapse = (DateTime.Now - player.LastGetQuests).TotalSeconds;
-            if(lastGetElapse < GetQuestInterval) return questsList;
+            var lastGetElapse = (DateTime.UtcNow - player.LastGetQuests).TotalSeconds;
+            if(lastGetElapse < GetQuestInterval) 
+                throw new GameRestrictionException($"Get Quest too often, need wait {GetQuestInterval - lastGetElapse}s");
             var removeList = questsList.Where(quest => quest.Status != QuestStatus.Done).ToList();
             foreach(var quest in removeList) questsList.Remove(quest);
-            var rnd = new Random(DateTime.Now.Millisecond);
+            var rnd = new Random();
             var count = rnd.Next(1, 5);
             while(count >0) {
                 count--;

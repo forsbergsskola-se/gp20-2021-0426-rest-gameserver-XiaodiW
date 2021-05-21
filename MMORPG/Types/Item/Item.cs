@@ -45,7 +45,7 @@ namespace MMORPG.Types.Item {
             Name = $"{LevelRequired}{Rarity}{Type}{LevelBonus}";
             IsDeleted = false;
             IsEquipped = false;
-            CreationTime = DateTime.Now;
+            CreationTime = DateTime.UtcNow;
         }
     }
 

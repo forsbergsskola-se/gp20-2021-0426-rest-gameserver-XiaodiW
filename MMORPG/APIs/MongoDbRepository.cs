@@ -103,7 +103,7 @@ namespace MMORPG.APIs {
             if(player.Quests.Equals(quests)) return player;
             var update = Builders<Player>.Update
                 .Set(p=>p.Quests, quests)
-                .Set(p=>p.LastGetQuests, DateTime.Now);
+                .Set(p=>p.LastGetQuests, DateTime.UtcNow);
             await UpdatePlayer(id, update);
             player = await GetPlayer(id);
             return player;
