@@ -31,7 +31,7 @@ namespace MMORPG.Types.Quest {
             Experience = rnd.Next(3, 21) * Math.Max(1,Level);
             RewardGold = rnd.Next(0, 2) == 1;
             Gold = RewardGold? rnd.Next(3, 21) * Math.Max(1,Level): 0;
-            Item = !RewardGold? new Item.Item(): null;
+            Item = !RewardGold? new Item.Item(playerLevel): null;
             CreateTime = DateTime.Now;
             ExpiredTime = rnd.Next(60, 2000) * Math.Max(1,Level);
             Status = QuestStatus.New;

@@ -160,7 +160,7 @@ namespace MMORPG.APIs {
             var player = data.FirstOrDefault(a => a.Id == id);
             if(player == null) throw new NotFoundException("Player ID Not Found!");
             if(item.Type == 0 && player.Level < 3) throw new NewItemValidationException();
-            result = new Item();
+            result = new Item(player.Level);
             player.Items.Add(result);
             await using var createStream = File.Create(_path);
             await JsonSerializer.SerializeAsync(createStream, data);

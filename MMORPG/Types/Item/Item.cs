@@ -30,15 +30,17 @@ namespace MMORPG.Types.Item {
 
         [JsonIgnore] [BsonIgnore] public Player.Player Player { get; set; }
 
-        public Item() {
+        public Item(int playerLevel) {
             Id = Guid.NewGuid();
             var rnd = new Random();
             var maxType = Enum.GetValues(typeof(ItemType)).Cast<int>().Max();
-            Type = (ItemType)rnd.Next(0,maxType);
+            Type = (ItemType) rnd.Next(0, maxType);
             var maxRarity = Enum.GetValues(typeof(ItemType)).Cast<int>().Max();
-            Rarity = (ItemRarity)rnd.Next(0,maxRarity);
-            Price = ((int) Rarity + 1) * 100 - rnd.Next(0, 100);
-            LevelRequired = ((int)Rarity+1)*10-rnd.Next(0,10);
+            Rarity = (ItemRarity) rnd.Next(0, maxRarity);
+            Price = ((int) Rarity * playerLevel + 1) * 100 - rnd.Next(0, 100);
+            var minLevel = playerLevel - 3 < 0 ? 0 : playerLevel - 3;
+            var maxLevel = playerLevel + 2;
+            LevelRequired = rnd.Next(minLevel, maxLevel);
             LevelBonus = ((int) Rarity + 1) * rnd.Next(1, 3);
             Name = $"{LevelRequired}{Rarity}{Type}{LevelBonus}";
             IsDeleted = false;

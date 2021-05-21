@@ -1,3 +1,4 @@
+using System.Linq;
 using Events;
 using UnityEngine;
 
@@ -9,11 +10,11 @@ public class ItemList : MonoBehaviour {
     }
 
     private void GenerateItemList(UpdatePlayerEvent e) {
-        var itemList = e.Player.Items;
-        if(itemList == null) return;
+        if(e.Player.Items == null) return;
+        var itemList = e.Player.Items.OrderBy(i=>i.LevelRequired).ThenBy(i=>i.IsEquipped).ToList();
         foreach(Transform child in transform) Destroy(child.gameObject);
         foreach(var item in itemList) {
-            if(item == null || item.IsDeleted) continue;
+            if(item.IsDeleted) continue;
             var instance = Instantiate(ItemPrefab, transform);
             instance.GetComponent<ItemInfo>().item = item;
         }

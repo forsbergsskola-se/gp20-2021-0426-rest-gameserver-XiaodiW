@@ -167,7 +167,7 @@ namespace MMORPG.APIs {
         public async Task<Item> AddItem(Guid id, NewItem item) {
             var player = await GetPlayer(id);
             if(item.Type == 0 && player.Level < 3) throw new NewItemValidationException();
-            var result = new Item();
+            var result = new Item(player.Level);
             var update = Builders<Player>.Update.AddToSet(x => x.Items, result);
             await UpdatePlayer(id,update);
             return result;
