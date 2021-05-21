@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class Register : MonoBehaviour {
     public InputField input;
-    public Login login;
+    public PlayerList playerList;
 
     private void Awake() {
         gameObject.SetActive(false);
@@ -25,7 +25,7 @@ public class Register : MonoBehaviour {
         playerIds.Add(newPlayer.Id);
         var str = JsonConvert.SerializeObject(playerIds);
         PlayerPrefs.SetString("IDs", str);
-        await login.GetComponent<Login>().GeneratePlayerList();
+        await playerList.GetComponent<PlayerList>().GeneratePlayerList();
         gameObject.SetActive(false);
     }
 }

@@ -1,4 +1,4 @@
-namespace MMORPG.Types.Item {
+namespace Types.Item {
 
     public enum ItemActions {
         Sell = 0, 

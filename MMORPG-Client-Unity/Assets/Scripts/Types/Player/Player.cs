@@ -49,6 +49,14 @@ namespace Types.Player {
             if(result.Id == Guid.Empty) throw new Exception(responseData);
             return result;
         }
+        
+        public static async Task<Player[]> GetLeaderBoard(LeaderBoardOrderBy orderBy) {
+            var url = new Uri($"{GlobalSetting.UrlRoot}/players?orderBy={orderBy}");
+            var restGet = new RestApiGet(url);
+            var responseData = await restGet.Get();
+            var result = JsonConvert.DeserializeObject<Player[]>(responseData);
+            return result;
+        }
     }
 
 }

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Types.Player;
 using UnityEngine;
 
-public class Login : MonoBehaviour {
+public class PlayerList : MonoBehaviour {
     public GameObject playerPrefab;
 
     private async void Start() {

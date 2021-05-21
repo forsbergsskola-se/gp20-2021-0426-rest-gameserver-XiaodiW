@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using MMORPG.Types.Item;
 using Newtonsoft.Json;
 using Types.Item;
 using Types.Player;

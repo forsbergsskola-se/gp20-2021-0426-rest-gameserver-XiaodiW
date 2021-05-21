@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Comm;
-using MMORPG.Types.Item;
 using Newtonsoft.Json;
 
 namespace Types.Item {
