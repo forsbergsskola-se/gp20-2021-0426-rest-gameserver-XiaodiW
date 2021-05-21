@@ -13,8 +13,7 @@ public partial class GameManager : MonoBehaviour {
     public Text Level;
     public Text Gold;
     public Text Exp;
-
-
+    
     private async void Start() {
         broker = GetComponent<EventsBroker>();
         broker.SubscribeTo<UpdatePlayerEvent>(UpdatePlayerUI);

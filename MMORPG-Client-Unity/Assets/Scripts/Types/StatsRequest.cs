@@ -1,4 +1,4 @@
-namespace MMORPG.Controllers {
+namespace Types {
 
     public enum StatsRequest {
         PlayerCount = 0, 
