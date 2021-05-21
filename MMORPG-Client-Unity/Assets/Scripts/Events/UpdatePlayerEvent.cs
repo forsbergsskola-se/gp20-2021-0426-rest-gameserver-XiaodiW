@@ -1,5 +1,7 @@
 using Types.Player;
 
+namespace Events {
+
     public class UpdatePlayerEvent {
         public Player Player;
 
@@ -8,3 +10,5 @@ using Types.Player;
         }
         
     }
+
+}

@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Comm {
+namespace APIComm {
 
     public class RestApiPost : RestApi {
         private readonly object _obj;

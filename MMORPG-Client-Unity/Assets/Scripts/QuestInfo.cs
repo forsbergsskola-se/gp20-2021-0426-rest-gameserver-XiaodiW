@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Events;
 using Newtonsoft.Json;
 using Types.Quest;
 using UnityEngine;

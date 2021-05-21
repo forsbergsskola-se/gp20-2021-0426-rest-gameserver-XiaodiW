@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Comm;
+using APIComm;
 using Newtonsoft.Json;
 using UnityEngine;
 

@@ -2,41 +2,45 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EventsBroker : MonoBehaviour
-{
-    readonly Dictionary<Type, object> subscribers = new Dictionary<Type, object>();
+namespace Events {
+
+    public class EventsBroker : MonoBehaviour
+    {
+        readonly Dictionary<Type, object> subscribers = new Dictionary<Type, object>();
         
-    public void SubscribeTo<TMessage>(Action<TMessage> callback)
-    {
-        if (this.subscribers.TryGetValue(typeof(TMessage), out var subscribers))
+        public void SubscribeTo<TMessage>(Action<TMessage> callback)
         {
-            callback = (subscribers as Action<TMessage>) + callback;
-        }
+            if (this.subscribers.TryGetValue(typeof(TMessage), out var subscribers))
+            {
+                callback = (subscribers as Action<TMessage>) + callback;
+            }
             
-        this.subscribers[typeof(TMessage)] = callback;
-    }
+            this.subscribers[typeof(TMessage)] = callback;
+        }
 
-    public void UnsubscribeFrom<TMessage>(Action<TMessage> callback)
-    {
-        if (this.subscribers.TryGetValue(typeof(TMessage), out var subscribers))
+        public void UnsubscribeFrom<TMessage>(Action<TMessage> callback)
         {
-            callback = (subscribers as Action<TMessage>) - callback;
-            if (callback != null)
+            if (this.subscribers.TryGetValue(typeof(TMessage), out var subscribers))
             {
-                this.subscribers[typeof(TMessage)] = callback;
+                callback = (subscribers as Action<TMessage>) - callback;
+                if (callback != null)
+                {
+                    this.subscribers[typeof(TMessage)] = callback;
+                }
+                else
+                {
+                    this.subscribers.Remove(typeof(TMessage));
+                }
             }
-            else
+        }
+
+        public void Publish<TMessage>(TMessage message)
+        {
+            if (this.subscribers.TryGetValue(typeof(TMessage), out var subscribers))
             {
-                this.subscribers.Remove(typeof(TMessage));
+                (subscribers as Action<TMessage>)?.Invoke(message);
             }
         }
     }
 
-    public void Publish<TMessage>(TMessage message)
-    {
-        if (this.subscribers.TryGetValue(typeof(TMessage), out var subscribers))
-        {
-            (subscribers as Action<TMessage>)?.Invoke(message);
-        }
-    }
 }
